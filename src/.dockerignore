@@ -1,0 +1,12 @@
+public/*
+*/node_modules*
+*/.git
+*/.gitignore
+.gitkeep
+
+source
+public
+backup
+config
+scripts
+package-lock.json

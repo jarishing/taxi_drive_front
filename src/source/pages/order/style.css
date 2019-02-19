@@ -1,0 +1,14 @@
+.order_panel {
+    margin: 10px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+    background-color: white;
+    padding: 10px;
+}
+
+    .order_panel > table {
+        margin-bottom: 0;
+    }
+
+.gmnoprint, .gm-control-active {
+    display: none;
+}

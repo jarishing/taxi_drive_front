@@ -1,0 +1,20 @@
+{
+    "short_name": "的士電召",
+    "name": "的士電召",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "./logo.png",
+            "sizes": "150x150",
+            "type": "image/png"
+        },
+        {
+            "src": "./icon512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": ".",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+}

@@ -1,0 +1,19 @@
+version: '2'
+services:
+
+  taxt_pwa:
+    build: ./
+    restart: always
+    command: node index.js
+    environment:
+      - NODE_ENV=production
+      - PORT=3200
+    expose:
+      - 3200
+    ports:
+      - 3200:3200
+
+networks:
+  default:
+    external:
+      name: nginx

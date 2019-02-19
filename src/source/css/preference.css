@@ -1,0 +1,29 @@
+html, body {
+    overscroll-behavior: contain;
+}
+
+.btn {
+    border: 0 !important;
+}
+
+.modal-content {
+    box-shadow: none;
+    border-radius: 4px;
+    border: 0;
+}
+
+.modal-header {
+    border: 0;
+}
+
+.modal-footer{
+    border: 0;
+}
+
+.react-confirm-alert-overlay {
+    background-color: rgba(0, 0, 0, 0.7)
+}
+
+.react-confirm-alert-body {
+    border-radius: 2px;
+}
