@@ -30,9 +30,11 @@ class View extends MVP.View {
                 passenger: 4,
                 payment: 'cash',
                 discount: 100,
+                return: false,
+                fixedPrice: null,
                 start: '',
                 mid: '',
-                end: ''
+                end: '',
             },
             touch: false,
             alert: {
@@ -134,12 +136,24 @@ class View extends MVP.View {
                                 </tr>
                                 <tr>
                                     <td> 乘客人數 </td>
-                                    <td> { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '珍寶': order.criteria.passenger == 7? '傷殘': "" } 的士 </td>
+                                    <td> { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '大 Fold': order.criteria.passenger == 7? '輪椅': "" } 的士 </td>
                                 </tr>
                                 <tr>
                                     <td> 隧道 </td>
-                                    <td> { order.criteria.tunnel == 'HungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' } </td>
+                                    <td> { order.criteria.tunnel == 'hungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' } </td>
                                 </tr>
+                                {
+                                    order.criteria.return && <tr>
+                                        <td> 來回 </td>
+                                        <td> 是 </td>
+                                    </tr>
+                                }
+                                {
+                                    order.criteria.fixedPrice && <tr>
+                                        <td> 定食 </td>
+                                        <td> ${ order.criteria.fixedPrice } </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -186,11 +200,10 @@ class View extends MVP.View {
     componentDidMount(){
 
         if ( isLoad == false ){
-
             this.prompt(
                 "修改車牌", 
                 "請輸入你的新車牌號碼", 
-                "車牌號碼", 
+                `${this.props.me.vehicle_reg_no}`, 
                 async input => {
                     if ( input.trim() == "" ){
                         window.alert("你所輸入的車牌號碼不正確! ");
@@ -301,7 +314,7 @@ class View extends MVP.View {
                         this.prompt(
                             "修改車牌", 
                             "請輸入你的新車牌號碼", 
-                            "車牌號碼", 
+                            `${this.props.me.vehicle_reg_no}`, 
                             async input => {
                                 if ( input.trim() == "" ){
                                     window.alert("輸入不正確", "你所輸入的車牌號碼不正確! ");
@@ -368,159 +381,200 @@ class View extends MVP.View {
                     </div>
                 </div>
                 <div className="order__select">
-                    <div>
-                        <div 
-                            className={ this.state.release.tunnel == 'any'? 'selected': "bg-lightyellow black"}
-                            onClick={ _ => this.handleChange('tunnel', 'release')('any')}
-                        > 
-                            任行 
+                    <div className="order__select__selector">
+                        <div className="order__select_selector__four">
+                            <div className="order__select_selector__four__row">
+                                <div 
+                                    className={this.state.release.tunnel == 'any'?"order__select_selector__four__button bg-yellow": "order__select_selector__four__button bg-lightyellow black"}
+                                    onClick={ _ => this.handleChange('tunnel', 'release')('any')}
+                                >
+                                    任行
+                                </div>
+                                <div 
+                                    className={this.state.release.tunnel == 'eastTunnel'?"order__select_selector__four__button bg-yellow": "order__select_selector__four__button bg-blue black"}
+                                    onClick={ _ => this.handleChange('tunnel', 'release')('eastTunnel')}
+                                >
+                                    東隧
+                                </div>
+                            </div>
+                            <div className="order__select_selector__four__row">
+                                <div 
+                                    className={ this.state.release.tunnel == 'westTunnel'?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightpink black"}
+                                    onClick={ _ => this.handleChange('tunnel', 'release')('westTunnel')}
+                                >
+                                    西隧
+                                </div>
+                                <div 
+                                    className={ this.state.release.tunnel == 'hungHomTunnel'?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-smoke"}
+                                    onClick={ _ => this.handleChange('tunnel', 'release')('hungHomTunnel')}
+                                >
+                                    紅隧
+                                </div>
+                            </div>
                         </div>
-                        <div 
-                            className={ this.state.release.tunnel == 'eastTunnel'? 'selected': "bg-blue black"}
-                            onClick={ _ => this.handleChange('tunnel', 'release')('eastTunnel')}
-                        > 
-                            東隧 
+                        <div className="order__select_selector__three">
+                            <div 
+                                className={ this.state.release.taxiType == 'red'? "order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-red"}
+                                onClick={ _ => this.handleChange('taxiType', 'release')('red')}
+                            >
+                                紅的
+                            </div>
+                            <div 
+                                className={ this.state.release.taxiType == 'green'?"order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-seagreen"}
+                                onClick={ _ => this.handleChange('taxiType', 'release')('green')}
+                            >
+                                綠的
+                            </div>
+                            <div 
+                                className={ this.state.release.taxiType == 'blue'?"order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-deepblue"}
+                                onClick={ _ => this.handleChange('taxiType', 'release')('blue')}
+                            >
+                                籃的
+                            </div>
                         </div>
-                        <div 
-                            className={ this.state.release.tunnel == 'westTunnel'? 'selected': "bg-lightpink black"}
-                            onClick={ _ => this.handleChange('tunnel', 'release')('westTunnel')}
-                        > 
-                            西隧 
+                        <div className="order__select_selector__four">
+                            <div className="order__select_selector__four__row">
+                                <div 
+                                    className={ this.state.release.passenger == 4?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightyellow black"}
+                                    onClick={ _ => this.handleChange('passenger', 'release')(4)}
+                                >
+                                    4人
+                                </div>
+                                <div 
+                                    className={ this.state.release.passenger == 5?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-tomato"}
+                                    onClick={ _ => this.handleChange('passenger', 'release')(5)}
+                                >
+                                    5人
+                                </div>
+                            </div>
+                            <div className="order__select_selector__four__row">
+                                <div 
+                                    className={ this.state.release.passenger == 6?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightgrey"}
+                                    onClick={ _ => this.handleChange('passenger', 'release')(6)}
+                                >
+                                    大Fold
+                                </div>
+                                <div 
+                                    className={ this.state.release.passenger == 7? "order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-brown"}
+                                    onClick={ _ => this.handleChange('passenger', 'release')(7)}
+                                >
+                                    輪椅
+                                </div>
+                            </div>
                         </div>
-                        <div 
-                            className={ this.state.release.tunnel == 'HungHomTunnel'? 'selected': "bg-red"}
-                            onClick={ _ => this.handleChange('tunnel', 'release')('HungHomTunnel')}
-                        > 
-                            紅隧 
-                        </div>
-                        <div 
-                            className={ this.state.release.taxiType == 'red'? 'selected': "bg-red"}
-                            onClick={ _ => this.handleChange('taxiType', 'release')('red')}
-                        > 
-                            紅的 
-                        </div>
-                        <div 
-                            className={ this.state.release.taxiType == 'green'? 'selected': "bg-green"}
-                            onClick={ _ => this.handleChange('taxiType', 'release')('green')}
-                        > 
-                            綠的 
-                        </div>
-                        <div 
-                            className={ this.state.release.taxiType == 'blue'? 'selected': "bg-blue black"}
-                            onClick={ _ => this.handleChange('taxiType', 'release')('blue')}
-                        > 
-                            籃的 
-                        </div>
-                    </div>
-                    <div>
-                        <div 
-                            className={ this.state.release.passenger == 4? 'selected': "bg-green"}
-                            onClick={ _ => this.handleChange('passenger', 'release')(4)}
-                        > 
-                            四人 
-                        </div>
-
-                        <div 
-                            className={ this.state.release.passenger == 5? 'selected': "bg-green"}
-                            onClick={ _ => this.handleChange('passenger', 'release')(5)}
-                        > 
-                            五人 
-                        </div>
-                        <div 
-                            className={ this.state.release.passenger == 6? 'selected': "bg-green"}
-                            onClick={ _ => this.handleChange('passenger', 'release')(6)}
-                        > 
-                            珍寶 
-                        </div>
-                        <div 
-                            className={ this.state.release.passenger == 7? 'selected': "bg-green"}
-                            onClick={ _ => this.handleChange('passenger', 'release')(7)}
-                        > 
-                            傷殘 
-                        </div>
-                    </div>
-                    <div>
-                        <div 
-                            className={ this.state.release.payment == 'cash'? 'selected': "bg-lightyellow black"}
-                            onClick={ _ => this.handleChange('payment', 'release')('cash')}
-                        > 
-                            現金 
-                        </div>
-                        <div 
-                            className={ this.state.release.payment == 'creditCard'? 'selected': "bg-lightpink black"}
-                            onClick={ _ => this.handleChange('payment', 'release')('creditCard')}
-                        > 
-                            信用卡 
-                        </div>
-                        <div 
-                            className={ this.state.release.payment == 'alipay'? 'selected': "bg-blue black"}
-                            onClick={ _ => this.handleChange('payment', 'release')('alipay')}
-                        > 
-                            支付寶 
-                        </div>
-                    </div>
-                    <div>
-                        <div 
-                            className={ this.state.release.discount == 100? 'selected': "bg-lightyellow black"}
-                            onClick={ _ => this.handleChange('discount', 'release')(100)}
-                        > 
-                            千足金 
-                        </div>
-                        <div 
-                            className={ this.state.release.discount == 90? 'selected': "bg-lightpink black"}
-                            onClick={ _ => this.handleChange('discount', 'release')(90)}
-                        > 
-                            九仔 
-                        </div>
-                        <div 
-                            className={ this.state.release.discount == 85? 'selected': "bg-blue black"}
-                            onClick={ _ => this.handleChange('discount', 'release')(85)}
-                        > 
-                            會員柯 
-                        </div>
-                        <div 
-                            style={{ backgroundColor: '#5cb85c' }}
-                            onClick={ async _ => {
-
-                                if ( this.state.release.start == "" || this.state.release.end == "")
-                                    return window.alert('請填寫你的起點及終點');
-
-                                try {
-                                    await api.order.makeOrder( 
-                                        this.state.release.start,
-                                        this.state.release.mid,
-                                        this.state.release.end,
-                                        {
-                                            taxiType: this.state.release.taxiType,
-                                            discount: this.state.release.discount,
-                                            tunnel: this.state.release.tunnel,
-                                            passenger: this.state.release.passenger
+                        <div className="order__select_selector__two">
+                            <div 
+                                className={ this.state.release.return? "order__select_selector__two__button bg-yellow":"order__select_selector__two__button bg-grey"}
+                                onClick={ _ => this.handleChange('return', 'release')(!this.state.release.return)}
+                            >
+                                來回
+                            </div>
+                            <div 
+                                className={ this.state.release.fixedPrice? "order__select_selector__two__button bg-yellow":"order__select_selector__two__button bg-grey"}
+                                onClick={ _ => 
+                                    this.prompt(
+                                        "定食", 
+                                        "請輸入預定訂單價錢", 
+                                        "訂單價錢", 
+                                        async input => {
+                                            if( input.trim() == "" ){
+                                                this.handleChange('fixedPrice', 'release')(null);
+                                                this.alertClose();
+                                            }else if( isNaN(parseInt(input)) || parseInt(input)<1 ){
+                                                window.alert("輸入不正確", "你所輸入的訂單價錢不正確! ");
+                                            } else {
+                                                this.handleChange('fixedPrice', 'release')(parseInt(input));
+                                                this.alertClose();
+                                            }
                                         }
-                                    );
-
-                                    window.alert('你已經成功送出柯打, 你可以在已出tab 或接貨頁面中查看或取消柯打');
-
-                                    this.setState({
-                                        release : {
-                                            tunnel: 'any', taxiType: 'red',
-                                            passenger: 4, payment: 'cash',
-                                            discount: 100, start: '',
-                                            mid: '', end: ''
-                                        }
-                                    }, _ => this.presenter.renewOrder() );
-
-                                } catch( error ){
-                                    window.alert('請檢查你的起點及終點 (提示: 使用一些比較有指標性的名字)');
+                                    )
                                 }
-                            }}
-                        >
-                            確定 
+                            >
+                                定食
+                            </div>
+                        </div>
+                    </div>
+                    <div className="order__select__confirm">
+                        <div className="order__select__confirm__three">
+                            <div 
+                                className="order__select__confirm__three__button bg-seagreen"
+                                onClick={ _ => this.orderSubmit(100)}
+                            >
+                                <div className="order__select__confirm__three__button__title">
+                                    確定
+                                </div>
+                                <div className="order__select__confirm__three__button__title">
+                                    千足金
+                                </div>
+                            </div>
+                            <div 
+                                className="order__select__confirm__three__button bg-orange"
+                                onClick={ _ => this.orderSubmit(90)}
+                            >
+                                <div className="order__select__confirm__three__button__title">
+                                    確定
+                                </div>
+                                <div className="order__select__confirm__three__button__title">
+                                    九仔
+                                </div>
+                            </div>
+                            <div 
+                                className="order__select__confirm__three__button bg-deepblue"
+                                onClick={ _ => this.orderSubmit(85)}
+                            >
+                                <div className="order__select__confirm__three__button__title">
+                                    確定
+                                </div>
+                                <div className="order__select__confirm__three__button__title">
+                                    會員柯
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         )
 
+    }
+
+    orderSubmit = async discount => {
+        await this.handleChange('discount', 'release')(discount);
+
+        
+        if ( this.state.release.start == "" || this.state.release.end == "")
+            return window.alert('請填寫你的起點及終點');
+
+        try {
+            await api.order.makeOrder( 
+                this.state.release.start,
+                this.state.release.mid,
+                this.state.release.end,
+                {
+                    taxiType: this.state.release.taxiType,
+                    discount: this.state.release.discount,
+                    tunnel: this.state.release.tunnel,
+                    passenger: this.state.release.passenger,
+                    fixedPrice: this.state.release.fixedPrice,
+                    return: this.state.release.return,
+                    payment: this.state.release.payment
+                }
+            );
+
+            window.alert('你已經成功送出柯打, 你可以在已出tab 或接貨頁面中查看或取消柯打');
+
+            this.setState({
+                release : {
+                    tunnel: 'any', taxiType: 'red',
+                    passenger: 4, payment: 'cash',
+                    discount: 100, return: false,
+                    fixedPrice: null, start: '',
+                    mid: '', end: ''
+                }
+            }, _ => this.presenter.renewOrder() );
+
+        } catch( error ){
+            window.alert('請檢查你的起點及終點 (提示: 使用一些比較有指標性的名字)');
+        }
     }
 
     handleVoiceInput = result => {
@@ -540,6 +594,111 @@ class View extends MVP.View {
         } else 
             return window.alert("無法識辨你的查詢, 請用\"去\"字分開你的起點, 終點, 及目的地");  
     }
+
+    /**
+     * 
+     * For tab 已接
+     * 
+     */
+
+    takenOrder = props => {
+        return (
+            <div className="order__list">
+                { this.props.takenOrder.map( this.takenOrderItem )}
+            </div>
+        )
+    }
+
+    takenOrderItem = (order, index) => {
+        // console.log("====================takenOrde======================");
+        // console.log(order);
+        const color = order.criteria.discount == 100? 'yellow': 
+                            order.criteria.discount == 90? 'green':
+                                'white';
+
+        return (
+            <div 
+                className="order" 
+                key={index} 
+                // style={{ borderTop: `5px solid ${color}`}}
+            >
+                <div 
+                    className="order__from_to" 
+                    style={{ color:color}}
+                    onClick={ _ => {
+                        this.props.setHeader('查看柯打')
+                        this.setState( _ => this.props.history.push('/order/'+ order._id));
+                    }}
+                >
+                    <div className="from"> { order.start.address} </div>
+                    <i className="icon-arrow-right7"/>
+                    <div className="to"> { order.end.address } </div>
+                </div>
+                <ul className="order__tabs">
+                    {
+                        order.status == "accepted" &&  <li
+                            style={{ backgroundColor:'green'}}
+                        > 
+                            已接受
+                        </li>
+                    } 
+                    {
+                        order.status == "confirmed" &&  <li
+                            style={{ backgroundColor:'steelblue'}}
+                        > 
+                            已確定
+                        </li>
+                    }     
+                    {
+                        order.status == "commented" &&  <li
+                            style={{ backgroundColor:'cadetblue'}}
+                        > 
+                            已評價
+                        </li>
+                    }
+                    <li
+                        style={{ backgroundColor: order.criteria.taxiType }}
+                    > 
+                        { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '籃的' }    
+                    </li>
+                    <li
+                        style={{ backgroundColor: 'green' }}
+                    > 
+                        { order.criteria.discount == 100? '千足金': order.criteria.discount == 90? '九折': '八五折' } 
+                    </li>
+                    <li
+                        style={{ backgroundColor: 'green' }}
+                    > 
+                        { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '大Fold': order.criteria.passenger == 7? '輪椅': "" } 的士
+                    </li>
+                    { 
+                        (order.criteria.tunnel == 'hungHomTunnel' || order.criteria.tunnel == 'eastTunnel' ||  order.criteria.tunnel == 'westTunnel') && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                            { order.criteria.tunnel == 'hungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' }
+                        </li>
+                    }
+                    {
+                        order.criteria.return && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           來回
+                        </li>
+                    }
+                    {
+                        order.criteria.fixedPrice && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           $ { order.criteria.fixedPrice }
+                        </li>
+                    }
+                </ul>
+                { 
+                    order.criteria.required && <div className="order__remark"> 備註: { order.criteria.required } </div> }
+            </div>
+        )
+    }
+
 
     /**
      * 
@@ -648,13 +807,27 @@ class View extends MVP.View {
                     <li
                         style={{ backgroundColor: 'green' }}
                     > 
-                        { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '珍寶': order.criteria.passenger == 7? '傷殘': "" } 的士
+                        { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '大Fold': order.criteria.passenger == 7? '輪椅': "" } 的士
                     </li>
                     { 
-                        (order.criteria.tunnel == 'HungHomTunnel' || order.criteria.tunnel == 'eastTunnel' ||  order.criteria.tunnel == 'westTunnel') && <li
+                        (order.criteria.tunnel == 'hungHomTunnel' || order.criteria.tunnel == 'eastTunnel' ||  order.criteria.tunnel == 'westTunnel') && <li
                             style={{ backgroundColor: 'green' }}
                         > 
-                            { order.criteria.tunnel == 'HungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' }
+                            { order.criteria.tunnel == 'hungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' }
+                        </li>
+                    }
+                    {
+                        order.criteria.return && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           來回
+                        </li>
+                    }
+                    {
+                        order.criteria.fixedPrice && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           $ { order.criteria.fixedPrice }
                         </li>
                     }
                 </ul>
@@ -680,8 +853,6 @@ class View extends MVP.View {
         const color = order.criteria.discount == 100? 'yellow': 
                             order.criteria.discount == 90? 'green':
                                 'white';
-
-        console.log(order)
 
         return (
             <div 
@@ -740,10 +911,24 @@ class View extends MVP.View {
                         { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '珍寶': order.criteria.passenger == 7? '傷殘': "" } 的士
                     </li>
                     { 
-                        (order.criteria.tunnel == 'HungHomTunnel' || order.criteria.tunnel == 'eastTunnel' ||  order.criteria.tunnel == 'westTunnel') && <li
+                        (order.criteria.tunnel == 'hungHomTunnel' || order.criteria.tunnel == 'eastTunnel' ||  order.criteria.tunnel == 'westTunnel') && <li
                             style={{ backgroundColor: 'green' }}
                         > 
-                            { order.criteria.tunnel == 'HungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' }
+                            { order.criteria.tunnel == 'hungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' }
+                        </li>
+                    }
+                    {
+                        order.criteria.return && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           來回
+                        </li>
+                    }
+                    {
+                        order.criteria.fixedPrice && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           $ { order.criteria.fixedPrice }
                         </li>
                     }
                 </ul>
@@ -793,6 +978,7 @@ class View extends MVP.View {
                 <div className="main__section">
                     { this.state.tab == "orders" && <this.renderOrders /> }
                     { this.state.tab == "released" && <this.renderOrderer /> }
+                    { this.state.tab == "takenOrder" && <this.takenOrder/> }
                     { this.state.tab == "release" && <this.renderRelease { ... this.state } /> }
                     { this.state.tab == "setting" && <this.renderSetting /> }
                 </div>
@@ -803,13 +989,25 @@ class View extends MVP.View {
                             className={ this.state.tab == 'orders'? 'active': '' }
                             onClick={ _ => this.handleChange('tab')('orders') }
                         >
-                            接貨
+                            接貨<br/>
+                            <div style={{color: 'brown'}}>
+                                {
+                                    this.props.orders.length > 0?
+                                    this.props.orders.length:"0"
+                                }
+                            </div>
                         </li>
                         <li 
                             className={ this.state.tab == 'release'? 'active': '' }
                             onClick={ _ => this.handleChange('tab')('release') }
                         >
                             出貨
+                        </li>
+                        <li 
+                            className={ this.state.tab == 'takenOrder'? 'active': '' }
+                            onClick={ _ => this.handleChange('tab')('takenOrder') }
+                        >
+                            已接
                         </li>
                         <li 
                             className={ this.state.tab == 'released'? 'active': '' }
@@ -832,3 +1030,153 @@ class View extends MVP.View {
 }
 
 export default (withModal(View));
+
+
+// <div>
+//                         <div 
+//                             className={ this.state.release.tunnel == 'any'? 'selected': "bg-lightyellow black"}
+//                             onClick={ _ => this.handleChange('tunnel', 'release')('any')}
+//                         > 
+//                             任行 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.tunnel == 'eastTunnel'? 'selected': "bg-blue black"}
+//                             onClick={ _ => this.handleChange('tunnel', 'release')('eastTunnel')}
+//                         > 
+//                             東隧 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.tunnel == 'westTunnel'? 'selected': "bg-lightpink black"}
+//                             onClick={ _ => this.handleChange('tunnel', 'release')('westTunnel')}
+//                         > 
+//                             西隧 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.tunnel == 'HungHomTunnel'? 'selected': "bg-red"}
+//                             onClick={ _ => this.handleChange('tunnel', 'release')('HungHomTunnel')}
+//                         > 
+//                             紅隧 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.taxiType == 'red'? 'selected': "bg-red"}
+//                             onClick={ _ => this.handleChange('taxiType', 'release')('red')}
+//                         > 
+//                             紅的 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.taxiType == 'green'? 'selected': "bg-green"}
+//                             onClick={ _ => this.handleChange('taxiType', 'release')('green')}
+//                         > 
+//                             綠的 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.taxiType == 'blue'? 'selected': "bg-blue black"}
+//                             onClick={ _ => this.handleChange('taxiType', 'release')('blue')}
+//                         > 
+//                             籃的 
+//                         </div>
+//                     </div>
+//                     <div>
+//                         <div 
+//                             className={ this.state.release.passenger == 4? 'selected': "bg-green"}
+//                             onClick={ _ => this.handleChange('passenger', 'release')(4)}
+//                         > 
+//                             四人 
+//                         </div>
+
+//                         <div 
+//                             className={ this.state.release.passenger == 5? 'selected': "bg-green"}
+//                             onClick={ _ => this.handleChange('passenger', 'release')(5)}
+//                         > 
+//                             五人 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.passenger == 6? 'selected': "bg-green"}
+//                             onClick={ _ => this.handleChange('passenger', 'release')(6)}
+//                         > 
+//                             珍寶 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.passenger == 7? 'selected': "bg-green"}
+//                             onClick={ _ => this.handleChange('passenger', 'release')(7)}
+//                         > 
+//                             傷殘 
+//                         </div>
+//                     </div>
+//                     <div>
+//                         <div 
+//                             className={ this.state.release.payment == 'cash'? 'selected': "bg-lightyellow black"}
+//                             onClick={ _ => this.handleChange('payment', 'release')('cash')}
+//                         > 
+//                             現金 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.payment == 'creditCard'? 'selected': "bg-lightpink black"}
+//                             onClick={ _ => this.handleChange('payment', 'release')('creditCard')}
+//                         > 
+//                             信用卡 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.payment == 'alipay'? 'selected': "bg-blue black"}
+//                             onClick={ _ => this.handleChange('payment', 'release')('alipay')}
+//                         > 
+//                             支付寶 
+//                         </div>
+//                     </div>
+//                     <div>
+//                         <div 
+//                             className={ this.state.release.discount == 100? 'selected': "bg-lightyellow black"}
+//                             onClick={ _ => this.handleChange('discount', 'release')(100)}
+//                         > 
+//                             千足金 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.discount == 90? 'selected': "bg-lightpink black"}
+//                             onClick={ _ => this.handleChange('discount', 'release')(90)}
+//                         > 
+//                             九仔 
+//                         </div>
+//                         <div 
+//                             className={ this.state.release.discount == 85? 'selected': "bg-blue black"}
+//                             onClick={ _ => this.handleChange('discount', 'release')(85)}
+//                         > 
+//                             會員柯 
+//                         </div>
+//                         <div 
+//                             style={{ backgroundColor: '#5cb85c' }}
+//                             onClick={ async _ => {
+
+                                // if ( this.state.release.start == "" || this.state.release.end == "")
+                                //     return window.alert('請填寫你的起點及終點');
+
+                                // try {
+                                //     await api.order.makeOrder( 
+                                //         this.state.release.start,
+                                //         this.state.release.mid,
+                                //         this.state.release.end,
+                                //         {
+                                //             taxiType: this.state.release.taxiType,
+                                //             discount: this.state.release.discount,
+                                //             tunnel: this.state.release.tunnel,
+                                //             passenger: this.state.release.passenger
+                                //         }
+                                //     );
+
+                                //     window.alert('你已經成功送出柯打, 你可以在已出tab 或接貨頁面中查看或取消柯打');
+
+                                //     this.setState({
+                                //         release : {
+                                //             tunnel: 'any', taxiType: 'red',
+                                //             passenger: 4, payment: 'cash',
+                                //             discount: 100, start: '',
+                                //             mid: '', end: ''
+                                //         }
+                                //     }, _ => this.presenter.renewOrder() );
+
+                                // } catch( error ){
+                                //     window.alert('請檢查你的起點及終點 (提示: 使用一些比較有指標性的名字)');
+                                // }
+//                             }}
+//                         >
+//                             確定 
+//                         </div>

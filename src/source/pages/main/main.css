@@ -10,8 +10,9 @@
     right: 0;
     top: 0;
     bottom: 0;
-    width: 50px;
+    width: 10vw;
     background: lightgrey;
+    overflow-y: scroll;
 }
 
 .main__sidebar__list {
@@ -41,7 +42,7 @@
     left: 0;
     top: 0;
     bottom: 0;
-    right: 50px;
+    right: 10vw;
 }
 
 .order__list {
@@ -100,6 +101,203 @@
 
 .order__release {
     padding: 10px;
+    height: 100%;
+}
+
+.order__form {
+    display: flex;
+}
+
+    .order__form__left {
+        width: 70%;
+    }
+
+        .order__form__left > div {
+            margin-bottom: 6px;
+        }
+
+    .order__form__right {
+        width: 30%
+    }
+
+    .order__form__record-button {
+ 
+    }
+
+        .order__form__record-button > i {
+            line-height: 115px;
+            width: calc( 100% - 10px);
+            background-color: deepskyblue;
+            margin-left: 10px;
+            text-align: center;
+            border-radius: 2px;
+            font-size: 48px;   
+        }
+
+/* For portrait, we want the tool bar on top */
+
+@media screen and (orientation: portrait) {
+    .order__select {
+        height: calc(100% - 120px);
+    }
+
+
+    .order__select__selector{
+        height: 84%;
+    }
+
+        .order__select_selector__four{
+            height:30%;
+            border-bottom: 5px solid black;
+        }
+
+            .order__select_selector__four__row{
+                width: 100%;
+                height: 50%;
+                display: flex;
+            }
+
+                .order__select_selector__four__button{
+                    width: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 5vh;                
+                }
+
+        .order__select_selector__three{
+            height: 20%;
+            display: flex;
+            border-bottom: 5px solid black;
+        }
+
+            .order__select_selector__three__button{
+                width: 33.3%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 5vh;
+                border-right: #000 1px solid;    
+            }
+
+        .order__select_selector__two{
+            height: 20%;
+            display: flex;
+            border-bottom: 5px solid black;
+        }
+
+            .order__select_selector__two__button{
+                width: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 5vh;
+                border-right: #000 1px solid;    
+            }
+
+    .order__select__confirm{
+        margin-top: 3%;
+        height: 11%;
+    }
+
+        .order__select__confirm__three{
+            display: flex;
+        }
+
+            .order__select__confirm__three__button{
+                width: 33.3%;
+                font-size: 4vh;
+                border-right: #000 1px solid; 
+            }
+
+                .order__select__confirm__three__button__title{
+                    display: flex;
+                    justify-content: center;
+                }
+}
+
+
+@media screen and (orientation: landscape) {
+    .order__select {
+        height: calc(100% - 120px);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .order__select__selector{
+        width: 79%;
+        display: flex;
+    }
+        .order__select_selector__four{
+            width:30%;
+            border-right: 5px solid black;
+        }
+        
+            .order__select_selector__four__row{
+                width: 100%;
+                height: 50%;
+                display: flex;
+            }
+
+                .order__select_selector__four__button{
+                    width: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 6vh;                
+                }
+
+    .order__select_selector__three{
+        width: 20%;
+        border-right: 5px solid black;
+    }
+
+        .order__select_selector__three__button{
+            height: 33.3%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 6vh;
+            border-bottom: #000 1px solid;    
+        }
+
+    .order__select_selector__two{
+        width: 20%;
+        border-right: 5px solid black;
+    }
+
+        .order__select_selector__two__button{
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 6vh;
+            border-bottom: #000 1px solid;    
+        }
+
+    .order__select__confirm{
+        width: 19%;
+    }
+    
+        .order__select__confirm__three{
+            width: 100%;
+        }
+
+            .order__select__confirm__three__button{
+                height: 33.3%;
+                font-size: 6vh;
+            }
+
+                .order__select__confirm__three__button__title{
+                    display: flex;
+                    justify-content: center;
+                    padding-top: 1vh;
+                }
+}
+
+/* .order__release {
+    padding: 10px;
+    height: 100%;
 }
 
 .order__form {
@@ -139,9 +337,9 @@
     .order__select > div{
         display: flex;
         flex-flow: row wrap;
-    }
+    } */
 
-        .order__select > div > div {
+        /* .order__select > div > div {
             color: white;
             display: inline-block;
             font-size: 20px;
@@ -156,6 +354,7 @@
             color: black;
             font-weight: 500;
         }
+*/
 
 .black { color: black !important };
 .bg-green { background-color: green !important; }
@@ -167,6 +366,13 @@
 .bg-lightgrey { background-color: lightgrey !important; }
 .bg-grey { background-color: grey !important; }
 .bg-purple { background-color: purple !important; }
+.bg-orange { background-color: orange !important; }
+.bg-brown { background-color: saddlebrown !important; }
+.bg-deepblue { background-color: steelblue !important; }
+.bg-seagreen { background-color: seagreen !important; }
+.bg-tomato { background-color: tomato !important}
+.bg-smoke { background-color: whitesmoke !important}
+
 
 .table-cs > tbody > tr > td {
     padding: 0px;

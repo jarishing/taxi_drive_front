@@ -72,13 +72,20 @@ class View extends MVP.View{
         }
 
         try {
-            await api.user.register(
+            let response = await api.user.register(
                 name, password, telephone_no, 
                 vehicle_reg_no, taxi_driver_id_no,
                 this.state.file
             );
-            this.alert('註冊成功', `成功註冊! 你現在可以以 ${telephone_no} 登入! `, _ => {
-                console.log('hello')
+
+            if( response.error ){
+                if( response.error.code == "UserExists" )
+                    return this.alert('註冊失敗', `這個電話已被註冊！如遺失密碼，請用忘記密碼功能！`);
+                else
+                    return this.alert('註冊失敗', `資料有誤. 請檢查你的輸入! `);
+            }
+
+            this.alert('註冊成功', `成功註冊! 管理員會盡快審核你的申請! `, _ => {
                 this.handleChange("show", 'alert')(false);
                 this.props.history.replace('/');
             });

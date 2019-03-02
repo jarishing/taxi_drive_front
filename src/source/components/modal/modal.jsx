@@ -1,4 +1,5 @@
 import React from 'react';
+import './modal.css';
 
 let setComponent = null;
 let setShow = null;

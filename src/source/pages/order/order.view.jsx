@@ -57,8 +57,10 @@ class View extends MVP.View{
 
         const _this = this;
 
-        const order = await api.order.getAnOrder(this.props.match.params.orderId)
-        this.setState({ order: order });
+        const order = await api.order.getAnOrder(this.props.match.params.orderId);
+        this.setState({ order: order,confirmed: order.status != "accepted" });
+        // console.log("===========orderpage========");
+        // console.log(this.state);
 
         if ( navigator.geolocation )
             navigator.geolocation.getCurrentPosition(function(position){
@@ -83,8 +85,6 @@ class View extends MVP.View{
 
     renderPortrait = props => {
 
-        // console.log(this.state)
-
         // console.log(this.props)
         // console.log(this.props.user._id == this.state.order.orderBy._id )
 
@@ -99,111 +99,7 @@ class View extends MVP.View{
                 />
                 <div className="order_panel">
                     <h4 style={{ padding:'0 5px'}}> 訂單資料 </h4>
-                    <table className="table table-cs">
-                        <tbody>
-                            <tr>
-                                <td> 起點 </td>
-                                <td>
-                                    { this.state.myLoc != null && <a href={toGoogleUrl(this.state.myLoc, this.state.order.start)}> { this.state.order.start.address }</a>}
-                                    { this.state.myLoc == null && <span> { this.state.order.start.address }</span>}
-                                    <i className="icon-map" style={{ marginLeft:'5px'}}/> 
-                                </td>
-                            </tr>
-                            {
-                                this.state.order.route && <tr>
-                                    <td> 中途站 </td>
-                                    <td> 
-                                        <a href={toGoogleUrl(this.state.order.start, this.state.order.route)}> { this.state.order.route.address }</a> 
-                                        <i className="icon-map" style={{ marginLeft:'5px'}}/> 
-                                    </td>
-                                </tr>
-                            }
-                            <tr>
-                                <td> 終點 </td>
-                                <td> 
-                                    <a href={toGoogleUrl( this.state.order.route? this.state.order.route: this.state.order.start, this.state.order.end)}> { this.state.order.end.address }</a> 
-                                    <i className="icon-map" style={{ marginLeft:'5px'}}/> 
-                                </td>
-                            </tr>
-                            <tr>
-                                <td> 折扣 </td>
-                                <td> { this.state.order.criteria.discount == 100? "原價": this.state.order.criteria.discount == 90? "九折": "公司價" }</td>
-                            </tr>
-                            <tr>
-                                <td> 發單人姓名 </td>
-                                <td> { this.state.order.orderBy.username }</td>
-                            </tr>
-                            <tr>
-                                <td> 發單人電話 </td>
-                                <td> <a href={`tel:${this.state.order.orderBy.telephone_no}`}>{ this.state.order.orderBy.telephone_no } <i className="icon-phone2" style={{ marginLeft:'5px'}}/> </a></td>
-                            </tr>
-                            <tr>
-                                <td> 發單人身份 </td>
-                                <td> { this.state.order.orderBy.type == "driver"? "司機": "乘客" }</td>
-                            </tr>
-                            <tr>
-                                <td colSpan="2">
-                                    <div className="flex" style={{ marginTop: '16px' }}>
-                                        {
-                                            !this.state.confirmed && this.state.order.orderBy._id != this.props.user._id && <React.Fragment>
-                                                <button 
-                                                    className="btn btn-success width100"
-                                                    onClick={ async _ => {
-                                                        await api.order.confirmOrder(this.state.order._id);
-                                                        await this.setState({ confirmed: true });
-                                                        this.alert('成功確認', '你已成功確認這張柯打, 請盡快到達客戶所在地', () => {
-                                                            this.handleChange("show", 'alert')(false);
-                                                        });
-                                                    }}
-                                                >   
-                                                    確認
-                                                </button>
-                                                <button 
-                                                    className="btn btn-error width100"
-                                                    style={{ margin:'0 5px'}}
-                                                    onClick={ async _ => {
-                                                        await api.order.releaseOrder(this.state.order._id);
-                                                        this.alert('取消確認', '你已取消這張柯打', _ => {
-                                                            this.handleChange("show", 'alert')(false);
-                                                            this.props.history.replace('/main');
-                                                        });
-                                                    }}
-                                                >   
-                                                    取消
-                                                </button>
-                                            </React.Fragment>
-                                        }
-                                        <button 
-                                            className="btn btn-warning width100"
-                                            onClick={ _ => this.props.history.replace('/main')}
-                                        >   
-                                            返回 
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </React.Fragment>
-        );
-    }
-
-    renderLandscape = props => {
-        
-        return <div className="flex">
-                    <div style={{ flex: 1 }}>
-                        <Map 
-                            width="100%"
-                            height="100%"
-                            origin={this.state.order.start}
-                            destination={this.state.order.end}
-                            route={this.state.order.route}
-                            // location = { this.state.mapData? this.state.mapData.geometry.location : null }
-                        />
-                    </div>
-                    <div className="order_panel" style={{ flex: 1, height: '94%' }}>
-                        <h4 style={{ padding:'0 5px'}}> 訂單資料 </h4>
+                    <div style={{height: 'calc( 50% - 135px )', overflowY: 'scroll'}}>
                         <table className="table table-cs">
                             <tbody>
                                 <tr>
@@ -226,7 +122,7 @@ class View extends MVP.View{
                                 <tr>
                                     <td> 終點 </td>
                                     <td> 
-                                        <a href={toGoogleUrl(this.state.order.start, this.state.order.end)}> { this.state.order.end.address }</a> 
+                                        <a href={toGoogleUrl( this.state.order.route? this.state.order.route: this.state.order.start, this.state.order.end)}> { this.state.order.end.address }</a> 
                                         <i className="icon-map" style={{ marginLeft:'5px'}}/> 
                                     </td>
                                 </tr>
@@ -235,80 +131,204 @@ class View extends MVP.View{
                                     <td> { this.state.order.criteria.discount == 100? "原價": this.state.order.criteria.discount == 90? "九折": "公司價" }</td>
                                 </tr>
                                 {
-                                    this.state.order.orderBy._id != this.props.user._id && <React.Fragment>
-                                        <tr>
-                                            <td> 發單人姓名 </td>
-                                            <td> { this.state.order.orderBy.username }</td>
-                                        </tr>
-                                        <tr>
-                                            <td> 發單人電話 </td>
-                                            <td> <a href={`tel:${this.state.order.orderBy.telephone_no}`}>{ this.state.order.orderBy.telephone_no } <i className="icon-phone2" style={{ marginLeft:'5px'}}/> </a></td>
-                                        </tr>
-                                        <tr>
-                                            <td> 發單人身份 </td>
-                                            <td> { this.state.order.orderBy.type == "driver"? "司機": "乘客" }</td>
-                                        </tr>
-                                    </React.Fragment>
+                                    this.state.order.criteria.return && <tr>
+                                        <td> 來回 </td>
+                                        <td> 是</td>
+                                    </tr>
                                 }
                                 {
-                                    this.state.order.acceptBy && this.state.order.acceptBy._id && <React.Fragment>
-                                        <tr>
-                                            <td> 接單人姓名 </td>
-                                            <td> { this.state.order.acceptBy.username }</td>
-                                        </tr>
-                                        <tr>
-                                            <td> 接單人電話 </td>
-                                            <td> <a href={`tel:${this.state.order.acceptBy.telephone_no}`}>{ this.state.order.acceptBy.telephone_no } <i className="icon-phone2" style={{ marginLeft:'5px'}}/> </a></td>
-                                        </tr>
-                                        <tr>
-                                            <td> 接單人身份 </td>
-                                            <td> { this.state.order.acceptBy.type == "driver"? "司機": "乘客" }</td>
-                                        </tr>
-                                    </React.Fragment>
+                                    this.state.order.criteria.fixedPrice && <tr>
+                                        <td> 定食 </td>
+                                        <td> $ { this.state.order.criteria.fixedPrice }</td>
+                                    </tr>
                                 }
                                 <tr>
-                                    <td colSpan="2">
-                                        <div className="flex" style={{ marginTop: '16px' }}>                          
-                                            {
-                                                !this.state.confirmed && this.state.order.orderBy._id != this.props.user._id && <React.Fragment>
-                                                    <button 
-                                                        className="btn btn-success width100"
-                                                        onClick={ async _ => {
-                                                            await api.order.confirmOrder(this.state.order._id);
-                                                            await this.setState({ confirmed: true });
-                                                            this.alert('成功確認', '你已成功確認這張柯打, 請盡快到達客戶所在地', () => {
-                                                                this.handleChange("show", 'alert')(false);
-                                                            });
-                                                        }}
-                                                    >   
-                                                        確認
-                                                    </button>
-                                                    <button 
-                                                        className="btn btn-error width100"
-                                                        style={{ margin:'0 5px'}}
-                                                        onClick={ async _ => {
-                                                            await api.order.releaseOrder(this.state.order._id);
-                                                            this.alert('取消確認', '你已取消這張柯打', _ => {
-                                                                this.handleChange("show", 'alert')(false);
-                                                                this.props.history.replace('/main');
-                                                            });
-                                                        }}
-                                                    >   
-                                                        取消
-                                                    </button>
-                                                </React.Fragment>
-                                            }
-                                            <button 
-                                                className="btn btn-warning width100"
-                                                onClick={ _ => this.props.history.replace('/main')}
-                                            >   
-                                                返回 
-                                            </button>
-                                        </div>
-                                    </td>
+                                    <td> 發單人姓名 </td>
+                                    <td> { this.state.order.orderBy.username }</td>
+                                </tr>
+                                <tr>
+                                    <td> 發單人電話 </td>
+                                    <td> <a href={`tel:${this.state.order.orderBy.telephone_no}`}>{ this.state.order.orderBy.telephone_no } <i className="icon-phone2" style={{ marginLeft:'5px'}}/> </a></td>
+                                </tr>
+                                <tr>
+                                    <td> 發單人身份 </td>
+                                    <td> { this.state.order.orderBy.type == "driver"? "司機": "乘客" }</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div className="flex" style={{ marginTop: '16px' }}>
+                        {
+                            !this.state.confirmed && this.state.order.orderBy._id != this.props.user._id && <React.Fragment>
+                                <button 
+                                    className="btn btn-success width100"
+                                    onClick={ async _ => {
+                                        await api.order.confirmOrder(this.state.order._id);
+                                        await this.setState({ confirmed: true });
+                                        this.alert('成功確認', '你已成功確認這張柯打, 請盡快到達客戶所在地', () => {
+                                                this.handleChange("show", 'alert')(false);
+                                            });
+                                        }}
+                                    >   
+                                        確認
+                                    </button>
+                                    <button 
+                                        className="btn btn-error width100"
+                                        style={{ margin:'0 5px'}}
+                                        onClick={ async _ => {
+                                            await api.order.releaseOrder(this.state.order._id);
+                                            this.alert('取消確認', '你已取消這張柯打', _ => {
+                                                this.handleChange("show", 'alert')(false);
+                                                this.props.history.replace('/main');
+                                                });
+                                                }}
+                                    >   
+                                        取消
+                                    </button>
+                                </React.Fragment>
+                        }
+                        <button 
+                            className="btn btn-warning width100"
+                            onClick={ _ => this.props.history.replace('/main')}
+                        >   
+                            返回 
+                        </button>
+                    </div>
+                </div>
+            </React.Fragment>
+        );
+    }
+
+    renderLandscape = props => {
+        
+        return <div className="flex">
+                    <div style={{ flex: 1 }}>
+                        <Map 
+                            width="100%"
+                            height="100%"
+                            origin={this.state.order.start}
+                            destination={this.state.order.end}
+                            route={this.state.order.route}
+                            // location = { this.state.mapData? this.state.mapData.geometry.location : null }
+                        />
+                    </div>
+                    <div className="order_panel" style={{ flex: 1, height: '94%' }}>
+                        <h4 style={{ padding:'0 5px'}}> 訂單資料 </h4>
+                        <div style={{    height: 'calc( 100% - 86px )',overflowY: 'scroll'}}>
+                            <table className="table table-cs">
+                                <tbody>
+                                    <tr>
+                                        <td> 起點 </td>
+                                        <td>
+                                            { this.state.myLoc != null && <a href={toGoogleUrl(this.state.myLoc, this.state.order.start)}> { this.state.order.start.address }</a>}
+                                            { this.state.myLoc == null && <span> { this.state.order.start.address }</span>}
+                                            <i className="icon-map" style={{ marginLeft:'5px'}}/> 
+                                        </td>
+                                    </tr>
+                                    {
+                                        this.state.order.route && <tr>
+                                            <td> 中途站 </td>
+                                            <td> 
+                                                <a href={toGoogleUrl(this.state.order.start, this.state.order.route)}> { this.state.order.route.address }</a> 
+                                                <i className="icon-map" style={{ marginLeft:'5px'}}/> 
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td> 終點 </td>
+                                        <td> 
+                                            <a href={toGoogleUrl(this.state.order.start, this.state.order.end)}> { this.state.order.end.address }</a> 
+                                            <i className="icon-map" style={{ marginLeft:'5px'}}/> 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> 折扣 </td>
+                                        <td> { this.state.order.criteria.discount == 100? "原價": this.state.order.criteria.discount == 90? "九折": "公司價" }</td>
+                                    </tr>
+                                    {
+                                        this.state.order.criteria.return && <tr>
+                                            <td> 來回 </td>
+                                            <td> 是</td>
+                                        </tr>
+                                    }
+                                    {
+                                        this.state.order.criteria.fixedPrice && <tr>
+                                            <td> 定食 </td>
+                                            <td> $ { this.state.order.criteria.fixedPrice }</td>
+                                        </tr>
+                                    }
+                                    {
+                                        this.state.order.orderBy._id != this.props.user._id && <React.Fragment>
+                                            <tr>
+                                                <td> 發單人姓名 </td>
+                                                <td> { this.state.order.orderBy.username }</td>
+                                            </tr>
+                                            <tr>
+                                                <td> 發單人電話 </td>
+                                                <td> <a href={`tel:${this.state.order.orderBy.telephone_no}`}>{ this.state.order.orderBy.telephone_no } <i className="icon-phone2" style={{ marginLeft:'5px'}}/> </a></td>
+                                            </tr>
+                                            <tr>
+                                                <td> 發單人身份 </td>
+                                                <td> { this.state.order.orderBy.type == "driver"? "司機": "乘客" }</td>
+                                            </tr>
+                                        </React.Fragment>
+                                    }
+                                    {
+                                        this.state.order.acceptBy && this.state.order.acceptBy._id && <React.Fragment>
+                                            <tr>
+                                                <td> 接單人姓名 </td>
+                                                <td> { this.state.order.acceptBy.username }</td>
+                                            </tr>
+                                            <tr>
+                                                <td> 接單人電話 </td>
+                                                <td> <a href={`tel:${this.state.order.acceptBy.telephone_no}`}>{ this.state.order.acceptBy.telephone_no } <i className="icon-phone2" style={{ marginLeft:'5px'}}/> </a></td>
+                                            </tr>
+                                            <tr>
+                                                <td> 接單人身份 </td>
+                                                <td> { this.state.order.acceptBy.type == "driver"? "司機": "乘客" }</td>
+                                            </tr>
+                                        </React.Fragment>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="flex" style={{ marginTop: '16px' }}>                          
+                            {
+                                !this.state.confirmed && this.state.order.orderBy._id != this.props.user._id && <React.Fragment>
+                                    <button 
+                                        className="btn btn-success width100"
+                                        onClick={ async _ => {
+                                            await api.order.confirmOrder(this.state.order._id);
+                                            await this.setState({ confirmed: true });
+                                            this.alert('成功確認', '你已成功確認這張柯打, 請盡快到達客戶所在地', () => {
+                                                this.handleChange("show", 'alert')(false);
+                                            });
+                                        }}
+                                    >   
+                                        確認
+                                    </button>
+                                    <button 
+                                        className="btn btn-error width100"
+                                        style={{ margin:'0 5px'}}
+                                        onClick={ async _ => {
+                                            await api.order.releaseOrder(this.state.order._id);
+                                            this.alert('取消確認', '你已取消這張柯打', _ => {
+                                                this.handleChange("show", 'alert')(false);
+                                                this.props.history.replace('/main');
+                                            });
+                                        }}
+                                    >   
+                                        取消
+                                    </button>
+                                </React.Fragment>
+                            }
+                            <button 
+                                className="btn btn-warning width100"
+                                onClick={ _ => this.props.history.replace('/main')}
+                            >   
+                                返回 
+                            </button>
+                        </div>
                     </div>
                 </div>
     }

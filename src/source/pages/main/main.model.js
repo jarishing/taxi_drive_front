@@ -13,7 +13,8 @@ class Model extends MVP.Model{
         this.state = {
             orders: [],
             me: {},
-            ordered: []
+            ordered: [],
+            takenOrder: []
         };
     }
 
@@ -34,9 +35,10 @@ class Model extends MVP.Model{
     getOrder = async() => {
         let orders = api.order.getOrder("new");
         let ordered = api.order.getOrdererOrder();
-        [ orders, ordered ] = await Promise.all([ orders, ordered ]);
+        let takenOrder = api.order.getTakenOrder();
+        [ orders, ordered, takenOrder ] = await Promise.all([ orders, ordered, takenOrder]);
 
-        this.setState({ orders: orders, ordered: ordered });
+        this.setState({ orders: orders, ordered: ordered, takenOrder:takenOrder });
     }
 
     getMe = async() => {

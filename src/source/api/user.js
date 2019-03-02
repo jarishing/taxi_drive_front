@@ -37,7 +37,13 @@ export async function register(
             type, username, telephone_no, password, 
             vehicle_reg_no, taxi_driver_id_no, taxi_driver_id_photo: file 
         }
-    );
+    )
+    .catch( error => {
+        return error.response.data
+    });
+
+    if( response.error )
+        return response;
 
     const { access_token, user } = response.data;
 

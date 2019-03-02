@@ -130,6 +130,26 @@ export async function getOrdererOrder(){
 
 }
 
+export async function getTakenOrder(){
+
+    const access_token = Store.getState().base.accessToken;
+
+    const { data: info } = await axios.get(
+        url + '/api/order', 
+        { 
+            params: {
+                status: 'all'
+            },
+            headers: { 
+                authorization: 'Bearer ' + access_token 
+            }
+        }
+    );
+    
+    return info.data;
+
+}
+
 export async function acceptOrder(orderId){
 
     const access_token = Store.getState().base.accessToken;
