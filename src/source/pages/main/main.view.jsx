@@ -197,13 +197,16 @@ class View extends MVP.View {
         return <React.Fragment />;
     }
 
-    componentDidMount(){
+    async componentDidMount(){
 
-        if ( isLoad == false ){
+        // console.log("+++++++=+++++hello++++++++++++++++++++");
+        // console.log(this.presenter);
+        if ( isLoad == false){
+            await this.presenter.renewMe();
             this.prompt(
                 "修改車牌", 
                 "請輸入你的新車牌號碼", 
-                `${this.props.me.vehicle_reg_no}`, 
+                `${this.props.user.vehicle_reg_no}`, 
                 async input => {
                     if ( input.trim() == "" ){
                         window.alert("你所輸入的車牌號碼不正確! ");
