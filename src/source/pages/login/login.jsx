@@ -37,7 +37,7 @@ class Login extends React.Component {
             let user = await api.user.getMe( this.cookie.userId, this.cookie.access_token);
             if ( user ){
                 this.props.setUser( user, this.cookie.access_token);
-                this.props.history.push('/main');
+                this.props.history.replace('/main');
                 Socket.whatIsMe();
                 // Socket.renewLocation();
             } else 

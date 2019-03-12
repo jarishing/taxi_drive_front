@@ -49,7 +49,7 @@ export default function(){
             return this.model.alert("登入錯誤", '密碼錯誤或賑號未被認證');
         }
 
-        this.props.history.push('/main');
+        this.props.history.replace('/main');
 
     };
 

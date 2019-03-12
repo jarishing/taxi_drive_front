@@ -179,7 +179,7 @@ class View extends MVP.View {
                                         const data = await api.order.acceptOrder(order._id);
                                         this.props.setShow(false)
                                         this.setState({ modal: null });
-                                        this.props.history.push('/order/'+data.data._id);
+                                        this.props.history.replace('/order/'+data.data._id);
                                     } catch( error ){
                                         console.error(error);
                                         return window.alert("無法接受這個柯打。可能已經其他司機接受。")
@@ -599,7 +599,7 @@ class View extends MVP.View {
                     style={{ color:color}}
                     onClick={ _ => {
                         this.props.setHeader('查看柯打')
-                        this.setState( _ => this.props.history.push('/order/'+ order._id));
+                        this.setState( _ => this.props.history.replace('/order/'+ order._id));
                     }}
                 >
                     <div className="from"> { order.start.address} </div>
@@ -703,7 +703,7 @@ class View extends MVP.View {
                     style={{ color:color}}
                     onClick={ _ => {
                         this.props.setHeader('查看柯打')
-                        this.setState( _ => this.props.history.push('/order/'+ order._id));
+                        this.setState( _ => this.props.history.replace('/order/'+ order._id));
                     }}
                 >
                     <div className="from"> { order.start.address} </div>
