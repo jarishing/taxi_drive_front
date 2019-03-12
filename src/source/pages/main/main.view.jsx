@@ -16,7 +16,7 @@ const BrowserSpeechRecognition = typeof window !== 'undefined' &&
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 
-let isLoad = false;
+
 
 class View extends MVP.View {
 
@@ -199,30 +199,7 @@ class View extends MVP.View {
 
     async componentDidMount(){
 
-        // console.log("+++++++=+++++hello++++++++++++++++++++");
-        // console.log(this.presenter);
-        if ( isLoad == false){
-            await this.presenter.renewMe();
-            this.prompt(
-                "修改車牌", 
-                "請輸入你的新車牌號碼", 
-                `${this.props.user.vehicle_reg_no}`, 
-                async input => {
-                    if ( input.trim() == "" ){
-                        window.alert("你所輸入的車牌號碼不正確! ");
-                    } else {
-                        await api.user.updateVehicleRegNo(input);
-                        this.alertClose();
-                        await this.presenter.renewMe();
-                    }
-                });
-        }
-
-
-        isLoad = true;
-
         const _this = this;
-
 
         if ( BrowserSpeechRecognition ){
             this.recognition = new BrowserSpeechRecognition();
@@ -237,10 +214,8 @@ class View extends MVP.View {
             this.recognition.onend = function(){
                 _this.setState({ touch: false });
             };
-
             this.recognition.onerror = function(){};
         }
-
         
     }
 
@@ -313,22 +288,16 @@ class View extends MVP.View {
                         登出 
                     </li>
                     <li> 使用條款 </li>
-                    <li onClick={ _ => 
-                        this.prompt(
-                            "修改車牌", 
-                            "請輸入你的新車牌號碼", 
-                            `${this.props.me.vehicle_reg_no}`, 
-                            async input => {
-                                if ( input.trim() == "" ){
-                                    window.alert("輸入不正確", "你所輸入的車牌號碼不正確! ");
-                                } else {
-                                    await api.user.updateVehicleRegNo(input);
-                                    this.alertClose();
-                                    await this.presenter.renewMe();
-                                }
-                            })
-                        }> 
-                            修改車牌 
+                    <li onClick={ async _ => {
+                        const input = window.prompt("請輸入你的新車牌號碼");
+
+                        if ( input != null && input.trim() != "" )
+                            return window.alert("輸入不正確", "你所輸入的車牌號碼不正確! ");
+
+                        await api.user.updateVehicleRegNo(input);
+                        await this.presenter.renewMe();
+                    }}> 
+                        修改車牌 
                     </li>
                 </ul>
             </div>
@@ -1034,152 +1003,3 @@ class View extends MVP.View {
 
 export default (withModal(View));
 
-
-// <div>
-//                         <div 
-//                             className={ this.state.release.tunnel == 'any'? 'selected': "bg-lightyellow black"}
-//                             onClick={ _ => this.handleChange('tunnel', 'release')('any')}
-//                         > 
-//                             任行 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.tunnel == 'eastTunnel'? 'selected': "bg-blue black"}
-//                             onClick={ _ => this.handleChange('tunnel', 'release')('eastTunnel')}
-//                         > 
-//                             東隧 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.tunnel == 'westTunnel'? 'selected': "bg-lightpink black"}
-//                             onClick={ _ => this.handleChange('tunnel', 'release')('westTunnel')}
-//                         > 
-//                             西隧 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.tunnel == 'HungHomTunnel'? 'selected': "bg-red"}
-//                             onClick={ _ => this.handleChange('tunnel', 'release')('HungHomTunnel')}
-//                         > 
-//                             紅隧 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.taxiType == 'red'? 'selected': "bg-red"}
-//                             onClick={ _ => this.handleChange('taxiType', 'release')('red')}
-//                         > 
-//                             紅的 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.taxiType == 'green'? 'selected': "bg-green"}
-//                             onClick={ _ => this.handleChange('taxiType', 'release')('green')}
-//                         > 
-//                             綠的 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.taxiType == 'blue'? 'selected': "bg-blue black"}
-//                             onClick={ _ => this.handleChange('taxiType', 'release')('blue')}
-//                         > 
-//                             籃的 
-//                         </div>
-//                     </div>
-//                     <div>
-//                         <div 
-//                             className={ this.state.release.passenger == 4? 'selected': "bg-green"}
-//                             onClick={ _ => this.handleChange('passenger', 'release')(4)}
-//                         > 
-//                             四人 
-//                         </div>
-
-//                         <div 
-//                             className={ this.state.release.passenger == 5? 'selected': "bg-green"}
-//                             onClick={ _ => this.handleChange('passenger', 'release')(5)}
-//                         > 
-//                             五人 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.passenger == 6? 'selected': "bg-green"}
-//                             onClick={ _ => this.handleChange('passenger', 'release')(6)}
-//                         > 
-//                             珍寶 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.passenger == 7? 'selected': "bg-green"}
-//                             onClick={ _ => this.handleChange('passenger', 'release')(7)}
-//                         > 
-//                             傷殘 
-//                         </div>
-//                     </div>
-//                     <div>
-//                         <div 
-//                             className={ this.state.release.payment == 'cash'? 'selected': "bg-lightyellow black"}
-//                             onClick={ _ => this.handleChange('payment', 'release')('cash')}
-//                         > 
-//                             現金 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.payment == 'creditCard'? 'selected': "bg-lightpink black"}
-//                             onClick={ _ => this.handleChange('payment', 'release')('creditCard')}
-//                         > 
-//                             信用卡 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.payment == 'alipay'? 'selected': "bg-blue black"}
-//                             onClick={ _ => this.handleChange('payment', 'release')('alipay')}
-//                         > 
-//                             支付寶 
-//                         </div>
-//                     </div>
-//                     <div>
-//                         <div 
-//                             className={ this.state.release.discount == 100? 'selected': "bg-lightyellow black"}
-//                             onClick={ _ => this.handleChange('discount', 'release')(100)}
-//                         > 
-//                             千足金 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.discount == 90? 'selected': "bg-lightpink black"}
-//                             onClick={ _ => this.handleChange('discount', 'release')(90)}
-//                         > 
-//                             九仔 
-//                         </div>
-//                         <div 
-//                             className={ this.state.release.discount == 85? 'selected': "bg-blue black"}
-//                             onClick={ _ => this.handleChange('discount', 'release')(85)}
-//                         > 
-//                             會員柯 
-//                         </div>
-//                         <div 
-//                             style={{ backgroundColor: '#5cb85c' }}
-//                             onClick={ async _ => {
-
-                                // if ( this.state.release.start == "" || this.state.release.end == "")
-                                //     return window.alert('請填寫你的起點及終點');
-
-                                // try {
-                                //     await api.order.makeOrder( 
-                                //         this.state.release.start,
-                                //         this.state.release.mid,
-                                //         this.state.release.end,
-                                //         {
-                                //             taxiType: this.state.release.taxiType,
-                                //             discount: this.state.release.discount,
-                                //             tunnel: this.state.release.tunnel,
-                                //             passenger: this.state.release.passenger
-                                //         }
-                                //     );
-
-                                //     window.alert('你已經成功送出柯打, 你可以在已出tab 或接貨頁面中查看或取消柯打');
-
-                                //     this.setState({
-                                //         release : {
-                                //             tunnel: 'any', taxiType: 'red',
-                                //             passenger: 4, payment: 'cash',
-                                //             discount: 100, start: '',
-                                //             mid: '', end: ''
-                                //         }
-                                //     }, _ => this.presenter.renewOrder() );
-
-                                // } catch( error ){
-                                //     window.alert('請檢查你的起點及終點 (提示: 使用一些比較有指標性的名字)');
-                                // }
-//                             }}
-//                         >
-//                             確定 
-//                         </div>

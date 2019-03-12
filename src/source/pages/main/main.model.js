@@ -6,6 +6,8 @@ import Socket from '../../socket';
 import { withCookies } from 'react-cookie';
 import Cookie from '../../cookie';
 
+let isLoad = false;
+
 class Model extends MVP.Model{
     
     constructor(props){
@@ -80,8 +82,29 @@ class Model extends MVP.Model{
 
     }
 
+    async askCarNumber(){
+        isLoad = true;
+        setTimeout(async() => {
+            const input = window.prompt("請輸入你的新車牌號碼");
+            if ( input != null && input.trim() !== "" ){
+                await api.user.updateVehicleRegNo(input);
+                await this.presenter.renewMe();
+            }
+        }, 1000);
+    }
+
     componentWillUnmount(){
         Socket.mute();
+    }
+
+    componentDidMount(){
+        if ( this.props.user )
+            this.askCarNumber()
+    }
+
+    componentDidUpdate(){
+        if ( this.props.user && isLoad == false )
+            this.askCarNumber()
     }
 
 }
