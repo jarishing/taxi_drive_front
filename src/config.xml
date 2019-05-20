@@ -29,5 +29,6 @@
     </platform>
     <plugin name="cordova-plugin-speechrecognition" spec="^1.2.0" />
     <plugin name="cordova-plugin-geolocation" spec="^4.0.1" />
+    <plugin name="phonegap-plugin-mobile-accessibility" spec="https://github.com/phonegap/phonegap-mobile-accessibility.git" />
     <engine name="android" spec="^7.1.4" />
 </widget>

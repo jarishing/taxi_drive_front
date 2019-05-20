@@ -48,6 +48,16 @@ class View extends React.PureComponent {
         this.setState(stateChange);
     }
 
+    tunnelSelect = (field, inner) => value => {
+        const stateChange = JSON.parse(JSON.stringify(this.state))
+        if( stateChange[inner][field] == value )
+            stateChange[inner][field] = 'any';
+        else
+            stateChange[inner][field] = value;
+
+        console.log( stateChange );
+        this.setState(stateChange);
+    }
     
 }
 

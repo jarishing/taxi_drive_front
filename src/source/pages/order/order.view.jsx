@@ -9,7 +9,10 @@ import SweetAlert from 'sweetalert-react';
 import { withRouter } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 import Cookie from '../../cookie';
+import Socket from '../../socket';
 import {connect} from 'react-redux';
+import moment from 'moment';
+import 'moment/locale/zh-hk';
 
 const toGoogleUrl = ( start, end ) => 
     `https://www.google.com/maps?saddr=${start.lat},${start.lng}&daddr=${end.lat},${end.lng}`;
@@ -33,7 +36,8 @@ class View extends MVP.View{
                 }
             },
             modal: null,
-            confirmed: false
+            confirmed: false,
+            cancel: false,
         }
     }
 
@@ -51,6 +55,23 @@ class View extends MVP.View{
         const { cookies } = this.props;
         this.cookie = new Cookie(cookies.getAll());
         await this.getMe();
+
+        Socket.listen(async event => {
+            console.log(event);
+
+            switch(event){
+                case 'USER_CANCEL':
+                    await window.alert('乘客已取消訂單');
+                    await this.props.history.replace('/main');
+                    // setTimeout(async() => {
+                    //     this.props.history.replace('/main');
+                    // }, 1000);
+                    // this.setState({cancel: true});
+                    break;
+                // case 'ORDER_OVERTIME_CONFIRM':
+                    // this.presenter.confirmOvertime();
+            }
+        });
     }
 
     async componentDidMount(){
@@ -85,6 +106,7 @@ class View extends MVP.View{
 
     renderPortrait = props => {
 
+        moment.locale('zh-hk');
         // console.log(this.props)
         // console.log(this.props.user._id == this.state.order.orderBy._id )
 
@@ -103,7 +125,7 @@ class View extends MVP.View{
                         <table className="table table-cs">
                             <tbody>
                                 <tr>
-                                    <td> 起點 </td>
+                                    <td > 起點 </td>
                                     <td>
                                         { this.state.myLoc != null && <a href={toGoogleUrl(this.state.myLoc, this.state.order.start)}> { this.state.order.start.address }</a>}
                                         { this.state.myLoc == null && <span> { this.state.order.start.address }</span>}
@@ -142,6 +164,12 @@ class View extends MVP.View{
                                         <td> $ { this.state.order.criteria.fixedPrice }</td>
                                     </tr>
                                 }
+                                {
+                                    this.state.order.criteria.otherPhone && <tr>
+                                        <td> 另外聯絡電話 </td>
+                                        <td> { this.state.order.criteria.otherPhone }</td>
+                                    </tr>
+                                }
                                 <tr>
                                     <td> 發單人姓名 </td>
                                     <td> { this.state.order.orderBy.username }</td>
@@ -155,6 +183,27 @@ class View extends MVP.View{
                                     <td> { this.state.order.orderBy.type == "driver"? "司機": "乘客" }</td>
                                 </tr>
                             </tbody>
+                            {
+                                this.state.order.acceptBy &&
+                                <tbody>
+                                    <tr>
+                                        <td> 司機名稱 </td>
+                                        <td> { this.state.order.acceptBy.username }</td>
+                                    </tr>
+                                    <tr>
+                                        <td> 司機電話 </td>
+                                        <td> { this.state.order.acceptBy.telephone_no }</td>
+                                    </tr>
+                                    <tr>
+                                        <td> 司機車牌號碼 </td>
+                                        <td> { this.state.order.acceptBy.vehicle_reg_no }</td>
+                                    </tr>
+                                    <tr>
+                                        <td> 接單時間 </td>
+                                        <td> { moment(this.state.order.updatedAt).fromNow() }</td>
+                                    </tr>
+                                </tbody>
+                            }
                         </table>
                     </div>
                     <div className="flex" style={{ marginTop: '16px' }}>
@@ -333,6 +382,11 @@ class View extends MVP.View{
                 </div>
     }
 
+
+    oncancel = () => {
+        this.props.history.replace('/main');
+    }
+
     render(){
 
         if ( this.state.order == null )
@@ -348,6 +402,25 @@ class View extends MVP.View{
                         text={this.state.alert.text}
                         onConfirm={_ =>this.state.alert.onConfirm()}
                     />
+                }
+                {
+                    this.state.cancel &&
+                    <div className="cancel-menu">
+                        <div className="canel-menu-background"/>
+                        <div className="canel-menu-wrapper">
+                            <div className="cancel-menu-title">
+                                取消訂單
+                            </div>
+                            <div className="cancel-menu-content">
+                                乘客已取消訂單,現在將跳回主頁
+                            </div>
+                            <div className="cancel-menu-button-row">
+                                <div className="cancel-menu-button" onClick={() => this.oncancel()}>
+                                    確定
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 }
 
                 <DeviceOrientation lockOrientation={'landscape'}>

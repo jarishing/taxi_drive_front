@@ -5,6 +5,8 @@ import withModal from '../../components/modal/modal';
 import SweetAlert from 'sweetalert-react';
 import api from '../../api';
 import moment from 'moment';
+import Tunnel from './tunnel.svg';
+import Taxi from './taxi.svg';
 
 const BrowserSpeechRecognition = typeof window !== 'undefined' &&
                                             (window.SpeechRecognition ||
@@ -32,6 +34,7 @@ class View extends MVP.View {
                 discount: 100,
                 return: false,
                 fixedPrice: null,
+                otherPhone: null,
                 start: '',
                 mid: '',
                 end: '',
@@ -110,48 +113,54 @@ class View extends MVP.View {
             return (
                 <React.Fragment>
                     <div className="modal-body">
-                        <table className="table table-cs">
-                            <tbody>
+                        <table className="table table-cs check-order-table">
+                            <tbody style={{fontSize: '2.4rem'}}>
                                 <tr>
-                                    <td> 起點 </td>
-                                    <td> { order.start.address } </td>
+                                    <td style={{fontSize: '2.4rem'}}> 起點 </td>
+                                    <td style={{fontSize: '2.4rem'}}> { order.start.address } </td>
                                 </tr>
                                 {
                                     order.route && <tr>
-                                        <td> 中途站 </td>
-                                        <td> { order.route.address } </td>
+                                        <td style={{fontSize: '2.4rem'}}> 中途站 </td>
+                                        <td style={{fontSize: '2.4rem'}}> { order.route.address } </td>
                                     </tr>
                                 }
                                 <tr>
-                                    <td> 終點 </td>
-                                    <td> { order.end.address } </td>
+                                    <td style={{fontSize: '2.4rem'}}> 終點 </td>
+                                    <td style={{fontSize: '2.4rem'}}> { order.end.address } </td>
                                 </tr>
                                 <tr>
-                                    <td> 的士類型 </td>
-                                    <td> { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '籃的' } </td>
+                                    <td style={{fontSize: '2.4rem'}}> 的士類型 </td>
+                                    <td style={{fontSize: '2.4rem'}}> { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '藍的' } </td>
                                 </tr>
                                 <tr>
-                                    <td> 折扣 </td>
-                                    <td> { order.criteria.discount == 100? '千足金': order.criteria.discount == 90? '九折': '八五折' } </td>
+                                    <td style={{fontSize: '2.4rem'}}> 折扣 </td>
+                                    <td style={{fontSize: '2.4rem'}}> { order.criteria.discount == 100? '千足金': order.criteria.discount == 90? '九折': '八五折' } </td>
                                 </tr>
                                 <tr>
-                                    <td> 乘客人數 </td>
-                                    <td> { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '大 Fold': order.criteria.passenger == 7? '輪椅': "" } 的士 </td>
+                                    <td style={{fontSize: '2.4rem'}}> 乘客人數 </td>
+                                    <td style={{fontSize: '2.4rem'}}> { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '大 Fold': order.criteria.passenger == 7? '輪椅': "" } 的士 </td>
                                 </tr>
                                 <tr>
-                                    <td> 隧道 </td>
-                                    <td> { order.criteria.tunnel == 'hungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' } </td>
+                                    <td style={{fontSize: '2.4rem'}}> 隧道 </td>
+                                    <td style={{fontSize: '2.4rem'}}> { order.criteria.tunnel == 'hungHomTunnel'? '紅隧': order.criteria.tunnel == 'eastTunnel'? '東隧': order.criteria.tunnel == 'westTunnel'? '西隧': '任行' } </td>
                                 </tr>
                                 {
                                     order.criteria.return && <tr>
-                                        <td> 來回 </td>
-                                        <td> 是 </td>
+                                        <td style={{fontSize: '2.4rem'}}> 來回 </td>
+                                        <td style={{fontSize: '2.4rem'}}> 是 </td>
                                     </tr>
                                 }
                                 {
                                     order.criteria.fixedPrice && <tr>
-                                        <td> 定食 </td>
-                                        <td> ${ order.criteria.fixedPrice } </td>
+                                        <td style={{fontSize: '2.4rem'}}> 定食 </td>
+                                        <td style={{fontSize: '2.4rem'}}> ${ order.criteria.fixedPrice } </td>
+                                    </tr>
+                                }
+                                {
+                                    order.criteria.otherPhone && <tr>
+                                        <td style={{fontSize: '2.4rem'}}> 另外聯絡電話 </td>
+                                        <td style={{fontSize: '2.4rem'}}> { order.criteria.otherPhone } </td>
                                     </tr>
                                 }
                             </tbody>
@@ -289,15 +298,20 @@ class View extends MVP.View {
                     </li>
                     <li> 使用條款 </li>
                     <li onClick={ async _ => {
-                        const input = window.prompt("請輸入你的新車牌號碼");
+                        let input = window.prompt("請輸入你的新車牌號碼", this.props.user.vehicle_reg_no);
+                        if ( input != null && input.trim() !== "" ){
+                            await api.user.updateVehicleRegNo(input);
+                            return await this.presenter.renewMe();
+                        }
 
-                        if ( input != null && input.trim() != "" )
-                            return window.alert("輸入不正確", "你所輸入的車牌號碼不正確! ");
-
-                        await api.user.updateVehicleRegNo(input);
-                        await this.presenter.renewMe();
+                        return window.alert("輸入不正確", "你所輸入的車牌號碼不正確! ");
                     }}> 
                         修改車牌 
+                    </li>
+                    <li
+                       onClick={ _ => this.presenter.onChangePw() } 
+                    > 
+                        更改密碼
                     </li>
                 </ul>
             </div>
@@ -318,7 +332,7 @@ class View extends MVP.View {
                     <div className="order__form__left">
                         <div className="form-group">
                             <input 
-                                className="form-control" 
+                                className="order_select-input"
                                 placeholder="起點" 
                                 value={ props.release.start }
                                 onChange={ event => this.handleChange('start', 'release')(event.target.value)}
@@ -327,7 +341,7 @@ class View extends MVP.View {
                         
                         <div className="form-group">
                             <input 
-                                className="form-control" 
+                                className="order_select-input"
                                 placeholder="中途站" 
                                 value={ props.release.mid }
                                 onChange={ event => this.handleChange('mid', 'release')(event.target.value)}
@@ -336,7 +350,7 @@ class View extends MVP.View {
 
                         <div className="form-group">
                             <input 
-                                className="form-control" 
+                                className="order_select-input" 
                                 placeholder="終點" 
                                 value={ props.release.end }
                                 onChange={ event => this.handleChange('end', 'release')(event.target.value)}
@@ -348,157 +362,205 @@ class View extends MVP.View {
                             className="order__form__record-button"
                             onClick = {event => this.recognize() }
                         >
-                            <i className="icon-volume-medium" style={{ color: this.state.touch? 'white': 'black'}}/>
+                            <i 
+                                className="icon-volume-medium" 
+                                style={{ 
+                                    color: this.state.touch? 'white': 'black',
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
                 <div className="order__select">
-                    <div className="order__select__selector">
-                        <div className="order__select_selector__four">
-                            <div className="order__select_selector__four__row">
-                                <div 
-                                    className={this.state.release.tunnel == 'any'?"order__select_selector__four__button bg-yellow": "order__select_selector__four__button bg-lightyellow black"}
-                                    onClick={ _ => this.handleChange('tunnel', 'release')('any')}
-                                >
-                                    任行
-                                </div>
-                                <div 
-                                    className={this.state.release.tunnel == 'eastTunnel'?"order__select_selector__four__button bg-yellow": "order__select_selector__four__button bg-blue black"}
-                                    onClick={ _ => this.handleChange('tunnel', 'release')('eastTunnel')}
-                                >
-                                    東隧
-                                </div>
-                            </div>
-                            <div className="order__select_selector__four__row">
-                                <div 
-                                    className={ this.state.release.tunnel == 'westTunnel'?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightpink black"}
-                                    onClick={ _ => this.handleChange('tunnel', 'release')('westTunnel')}
-                                >
-                                    西隧
-                                </div>
-                                <div 
-                                    className={ this.state.release.tunnel == 'hungHomTunnel'?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-smoke"}
-                                    onClick={ _ => this.handleChange('tunnel', 'release')('hungHomTunnel')}
-                                >
-                                    紅隧
-                                </div>
+                    <div className="order-select-list">
+                        <div 
+                            className={this.state.release.tunnel == 'hungHomTunnel'? "order-icon-tunnel bg-red":"order-icon-tunnel"}
+                            onClick={ _ => this.tunnelSelect('tunnel', 'release')('hungHomTunnel')}
+                        >
+                            <img 
+                                className='order-icon-tunnel-img'
+                                src={Tunnel}
+                            />
+                            <div className="order-icon-tunnel-title">
+                                紅
                             </div>
                         </div>
-                        <div className="order__select_selector__three">
-                            <div 
-                                className={ this.state.release.taxiType == 'red'? "order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-red"}
-                                onClick={ _ => this.handleChange('taxiType', 'release')('red')}
-                            >
-                                紅的
-                            </div>
-                            <div 
-                                className={ this.state.release.taxiType == 'green'?"order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-seagreen"}
-                                onClick={ _ => this.handleChange('taxiType', 'release')('green')}
-                            >
-                                綠的
-                            </div>
-                            <div 
-                                className={ this.state.release.taxiType == 'blue'?"order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-deepblue"}
-                                onClick={ _ => this.handleChange('taxiType', 'release')('blue')}
-                            >
-                                籃的
+                        <div 
+                            className={this.state.release.tunnel == 'eastTunnel'? "order-icon-tunnel bg-honey":"order-icon-tunnel"}
+                            onClick={ _ => this.tunnelSelect('tunnel', 'release')('eastTunnel')}
+                        >
+                            <img 
+                                className='order-icon-tunnel-img'
+                                src={Tunnel}
+                            />
+                            <div className="order-icon-tunnel-title">
+                                東
                             </div>
                         </div>
-                        <div className="order__select_selector__four">
-                            <div className="order__select_selector__four__row">
-                                <div 
-                                    className={ this.state.release.passenger == 4?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightyellow black"}
-                                    onClick={ _ => this.handleChange('passenger', 'release')(4)}
-                                >
-                                    4人
-                                </div>
-                                <div 
-                                    className={ this.state.release.passenger == 5?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-tomato"}
-                                    onClick={ _ => this.handleChange('passenger', 'release')(5)}
-                                >
-                                    5人
-                                </div>
-                            </div>
-                            <div className="order__select_selector__four__row">
-                                <div 
-                                    className={ this.state.release.passenger == 6?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightgrey"}
-                                    onClick={ _ => this.handleChange('passenger', 'release')(6)}
-                                >
-                                    大Fold
-                                </div>
-                                <div 
-                                    className={ this.state.release.passenger == 7? "order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-brown"}
-                                    onClick={ _ => this.handleChange('passenger', 'release')(7)}
-                                >
-                                    輪椅
-                                </div>
-                            </div>
-                        </div>
-                        <div className="order__select_selector__two">
-                            <div 
-                                className={ this.state.release.return? "order__select_selector__two__button bg-yellow":"order__select_selector__two__button bg-grey"}
-                                onClick={ _ => this.handleChange('return', 'release')(!this.state.release.return)}
-                            >
-                                來回
-                            </div>
-                            <div 
-                                className={ this.state.release.fixedPrice? "order__select_selector__two__button bg-yellow":"order__select_selector__two__button bg-grey"}
-                                onClick={ _ => 
-                                    this.prompt(
-                                        "定食", 
-                                        "請輸入預定訂單價錢", 
-                                        "訂單價錢", 
-                                        async input => {
-                                            if( input.trim() == "" ){
-                                                this.handleChange('fixedPrice', 'release')(null);
-                                                this.alertClose();
-                                            }else if( isNaN(parseInt(input)) || parseInt(input)<1 ){
-                                                window.alert("輸入不正確", "你所輸入的訂單價錢不正確! ");
-                                            } else {
-                                                this.handleChange('fixedPrice', 'release')(parseInt(input));
-                                                this.alertClose();
-                                            }
-                                        }
-                                    )
-                                }
-                            >
-                                定食
+                        <div 
+                            className={this.state.release.tunnel == 'westTunnel'? "order-icon-tunnel bg-seagreen":"order-icon-tunnel"}
+                            onClick={ _ => this.tunnelSelect('tunnel', 'release')('westTunnel')}
+                        >
+                            <img 
+                                className='order-icon-tunnel-img'
+                                src={Tunnel}
+                            />
+                            <div className="order-icon-tunnel-title">
+                                西
                             </div>
                         </div>
                     </div>
-                    <div className="order__select__confirm">
-                        <div className="order__select__confirm__three">
-                            <div 
-                                className="order__select__confirm__three__button bg-seagreen"
-                                onClick={ _ => this.orderSubmit(100)}
-                            >
-                                <div className="order__select__confirm__three__button__title">
-                                    確定
-                                </div>
-                                <div className="order__select__confirm__three__button__title">
+                    <div className="order-select-list">
+                        <div 
+                            className={this.state.release.taxiType == 'red'? "order-icon-tunnel bg-red":"order-icon-tunnel"}
+                            onClick={ _ => this.handleChange('taxiType', 'release')('red')}
+                        >
+                            <img 
+                                className='order-icon-taxi'
+                                src={Taxi}
+                            />
+                            <div className="order-icon-taxi-title">
+                                紅
+                            </div>
+                        </div>
+                        <div 
+                            className={this.state.release.taxiType == 'green'? "order-icon-tunnel bg-seagreen":"order-icon-tunnel"}
+                            onClick={ _ => this.handleChange('taxiType', 'release')('green')}
+                        >
+                            <img 
+                                className='order-icon-taxi'
+                                src={Taxi}
+                            />
+                            <div className="order-icon-taxi-title">
+                                綠
+                            </div>
+                        </div>
+                        <div 
+                            className={this.state.release.taxiType == 'blue'? "order-icon-tunnel bg-deepblue":"order-icon-tunnel"}
+                            onClick={ _ => this.handleChange('taxiType', 'release')('blue')}
+                        >
+                            <img 
+                                className='order-icon-taxi'
+                                src={Taxi}
+                            />
+                            <div className="order-icon-taxi-title">
+                                藍
+                            </div>
+                        </div>
+                    </div>
+                    <div className="order-select-list">
+                        <div 
+                            className={ this.state.release.passenger == 4? "order-select-row-item bg-honey":"order-select-row-item"}
+                            onClick={ _ => this.handleChange('passenger', 'release')(4)}
+                        >
+                            4人
+                        </div>
+                        <div 
+                            className={ this.state.release.passenger == 5? "order-select-row-item bg-honey":"order-select-row-item"}
+                            onClick={ _ => this.handleChange('passenger', 'release')(5)}
+                        >
+                            5人
+                        </div>
+                        <div 
+                            className={ this.state.release.passenger == 6? "order-select-row-item bg-honey":"order-select-row-item"}
+                            onClick={ _ => this.handleChange('passenger', 'release')(6)}
+                        >
+                            大Ford
+                        </div>
+                    </div>
+                    <div className="order-select-list">
+                        <div 
+                            className={ this.state.release.return?"order-select-row-item bg-honey":"order-select-row-item"}
+                            onClick={ _ => this.handleChange('return', 'release')(!this.state.release.return)}
+                        >
+                            來回
+                        </div>
+                        <div 
+                            className={ this.state.release.fixedPrice?"order-select-row-item bg-honey":"order-select-row-item"}
+                            onClick={ _ => {
+                                    let input = window.prompt("定食 (請輸入預定訂單價錢)")
+                                    if( input.trim() == "" ){
+                                        this.handleChange('fixedPrice', 'release')(null);
+                                    }else if( isNaN(parseInt(input)) || parseInt(input)<1 ){
+                                        window.alert("輸入不正確", "你所輸入的訂單價錢不正確! ");
+                                    } else {
+                                        this.handleChange('fixedPrice', 'release')(parseInt(input));
+                                    }
+                                }
+                            }
+                        >
+                            <div>
+                                <div className="order-select-row-item-big-price">定食</div>
+                                {
+                                    this.state.release.fixedPrice &&
+                                    <div className="order-select-row-item-big-price">
+                                        ${this.state.release.fixedPrice}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div 
+                            className={ this.state.release.otherPhone?"order-select-row-item bg-honey":"order-select-row-item"}
+                            onClick={ _ => {
+                                    let input = window.prompt("另外聯絡（如想司機直接聯絡客人請輸入）")
+                                    if( input.trim() == "" ){
+                                        this.handleChange('otherPhone', 'release')(null);
+                                    }else if( isNaN(parseInt(input)) ){
+                                        window.alert("輸入不正確", "你所輸入的電話號碼不正確! ");
+                                    } else {
+                                        this.handleChange('otherPhone', 'release')(parseInt(input));
+                                    }
+                                }
+                            }
+                        >
+                            <div>
+                                <div className="order-select-row-item-big-price">另外聯絡</div>
+                                {
+                                    this.state.release.otherPhone &&
+                                    <div className="order-select-row-item-big-price">
+                                        {this.state.release.otherPhone}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div className="order-select-confirm-list">
+                        <div 
+                            className="order-select-confirm-item bg-jet"
+                            onClick={ _ => this.orderSubmit(100)}
+                        >
+                            <div>
+                                <div className="order-select-confirm-item-title">
                                     千足金
                                 </div>
-                            </div>
-                            <div 
-                                className="order__select__confirm__three__button bg-orange"
-                                onClick={ _ => this.orderSubmit(90)}
-                            >
-                                <div className="order__select__confirm__three__button__title">
+                                <div className="order-select-confirm-item-title">
                                     確定
                                 </div>
-                                <div className="order__select__confirm__three__button__title">
+                            </div>
+                        </div>
+                        <div 
+                            className="order-select-confirm-item bg-taupe"
+                            onClick={ _ => this.orderSubmit(90)}
+                        >
+                            <div>
+                                <div className="order-select-confirm-item-title">
                                     九仔
                                 </div>
-                            </div>
-                            <div 
-                                className="order__select__confirm__three__button bg-deepblue"
-                                onClick={ _ => this.orderSubmit(85)}
-                            >
-                                <div className="order__select__confirm__three__button__title">
+                                <div className="order-select-confirm-item-title">
                                     確定
                                 </div>
-                                <div className="order__select__confirm__three__button__title">
+                            </div>
+                        </div>
+                        <div 
+                            className="order-select-confirm-item bg-wenge"
+                            onClick={ _ => this.orderSubmit(85)}
+                        >
+                            <div>
+                                <div className="order-select-confirm-item-title">
                                     會員柯
+                                </div>
+                                <div className="order-select-confirm-item-title">
+                                    確定
                                 </div>
                             </div>
                         </div>
@@ -528,7 +590,8 @@ class View extends MVP.View {
                     passenger: this.state.release.passenger,
                     fixedPrice: this.state.release.fixedPrice,
                     return: this.state.release.return,
-                    payment: this.state.release.payment
+                    payment: this.state.release.payment,
+                    otherPhone: this.state.release.otherPhone
                 }
             );
 
@@ -540,7 +603,7 @@ class View extends MVP.View {
                     passenger: 4, payment: 'cash',
                     discount: 100, return: false,
                     fixedPrice: null, start: '',
-                    mid: '', end: ''
+                    mid: '', end: '', otherPhone: null
                 }
             }, _ => this.presenter.renewOrder() );
 
@@ -582,8 +645,8 @@ class View extends MVP.View {
     }
 
     takenOrderItem = (order, index) => {
-        // console.log("====================takenOrde======================");
-        // console.log(order);
+        console.log("====================takenOrde======================");
+        console.log(order);
         const color = order.criteria.discount == 100? 'yellow': 
                             order.criteria.discount == 90? 'green':
                                 'white';
@@ -631,7 +694,7 @@ class View extends MVP.View {
                     <li
                         style={{ backgroundColor: order.criteria.taxiType }}
                     > 
-                        { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '籃的' }    
+                        { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '藍的' }    
                     </li>
                     <li
                         style={{ backgroundColor: 'green' }}
@@ -662,6 +725,13 @@ class View extends MVP.View {
                             style={{ backgroundColor: 'green' }}
                         > 
                            $ { order.criteria.fixedPrice }
+                        </li>
+                    }
+                    {
+                        order.criteria.otherPhone && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           聯絡電話: { order.criteria.otherPhone }
                         </li>
                     }
                 </ul>
@@ -769,7 +839,7 @@ class View extends MVP.View {
                     <li
                         style={{ backgroundColor: order.criteria.taxiType }}
                     > 
-                        { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '籃的' }    
+                        { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '藍的' }    
                     </li>
                     <li
                         style={{ backgroundColor: 'green' }}
@@ -802,6 +872,13 @@ class View extends MVP.View {
                            $ { order.criteria.fixedPrice }
                         </li>
                     }
+                    {
+                        order.criteria.otherPhone && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           聯絡電話: { order.criteria.otherPhone }
+                        </li>
+                    }
                 </ul>
                 { 
                     order.criteria.required && <div className="order__remark"> 備註: { order.criteria.required } </div> }
@@ -816,12 +893,12 @@ class View extends MVP.View {
      */
     renderOrders = props => (
         <div className="order__list">
+            {console.log(this.props)}
             { this.props.orders.map( this.renderOrder )}
         </div>
     );
 
     renderOrder = (order, index) => {
-
         const color = order.criteria.discount == 100? 'yellow': 
                             order.criteria.discount == 90? 'green':
                                 'white';
@@ -842,9 +919,23 @@ class View extends MVP.View {
                         }}, _ => this.props.setShow(true));
                     }}
                 >
-                    <div className="from"> { order.start.address} </div>
+                    <div className="order__from-to-title">
+                        { order.start.address}
+                    </div>
+                    {
+                        order.route &&
+                        <i className="icon-arrow-right7"/>
+                    }
+                    {
+                        order.route &&
+                        <div className="order__from-to-title">
+                            {order.route.address}
+                        </div>
+                    }
                     <i className="icon-arrow-right7"/>
-                    <div className="to"> { order.end.address } </div>
+                    <div className="order__from-to-title">
+                        { order.end.address }
+                    </div>
                 </div>
                 <ul className="order__tabs">
                     { 
@@ -870,7 +961,7 @@ class View extends MVP.View {
                     <li
                         style={{ backgroundColor: order.criteria.taxiType }}
                     > 
-                        { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '籃的' }    
+                        { order.criteria.taxiType == 'green'? '綠的': order.criteria.taxiType == 'red'? '紅的': '藍的' }    
                     </li>
                     <li
                         style={{ backgroundColor: 'green' }}
@@ -880,7 +971,7 @@ class View extends MVP.View {
                     <li
                         style={{ backgroundColor: 'green' }}
                     > 
-                        { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '珍寶': order.criteria.passenger == 7? '傷殘': "" } 的士
+                        { order.criteria.passenger == 4? '四人': order.criteria.passenger == 5? '五人': order.criteria.passenger == 6? '珍寶': order.criteria.passenger == 7? '輪椅': "" } 的士
                     </li>
                     { 
                         (order.criteria.tunnel == 'hungHomTunnel' || order.criteria.tunnel == 'eastTunnel' ||  order.criteria.tunnel == 'westTunnel') && <li
@@ -903,6 +994,13 @@ class View extends MVP.View {
                            $ { order.criteria.fixedPrice }
                         </li>
                     }
+                    {
+                        order.criteria.otherPhone && <li
+                            style={{ backgroundColor: 'green' }}
+                        > 
+                           聯絡電話: { order.criteria.otherPhone }
+                        </li>
+                    }
                 </ul>
                 { 
                     order.criteria.required && <div className="order__remark"> 備註: { order.criteria.required } </div> }
@@ -910,13 +1008,24 @@ class View extends MVP.View {
         )
     }
 
+    // <div className="from"> { order.start.address} </div>
+    //                 <i className="icon-arrow-right7"/>
+    //                 {
+    //                     order.route && 
+    //                     <div className="order__route-to">
+    //                         <div className="from"> { order.route.address} </div>
+    //                         <i className="icon-arrow-right7"/>
+    //                     </div>
+    //                 }
+    //                 <div className="to"> { order.end.address } </div>
 
-    handleChange = (field, inner) => value => {
-        const stateChange = JSON.parse(JSON.stringify(this.state))
+    handleChange =  (field, inner) => value => {
+        const stateChange = JSON.parse(JSON.stringify(this.state));
         if(inner)
             stateChange[inner][field] = value;
         else
             stateChange[field] = value;
+
         this.setState(stateChange);
     }
 
@@ -1003,3 +1112,188 @@ class View extends MVP.View {
 
 export default (withModal(View));
 
+
+
+// <div className="order__form">
+                //     <div className="order__form__left">
+                //         <div className="form-group">
+                //             <input 
+                //                 className="form-control" 
+                //                 placeholder="起點" 
+                //                 value={ props.release.start }
+                //                 onChange={ event => this.handleChange('start', 'release')(event.target.value)}
+                //             />
+                //         </div>
+                        
+                //         <div className="form-group">
+                //             <input 
+                //                 className="form-control" 
+                //                 placeholder="中途站" 
+                //                 value={ props.release.mid }
+                //                 onChange={ event => this.handleChange('mid', 'release')(event.target.value)}
+                //             />
+                //         </div>
+
+                //         <div className="form-group">
+                //             <input 
+                //                 className="form-control" 
+                //                 placeholder="終點" 
+                //                 value={ props.release.end }
+                //                 onChange={ event => this.handleChange('end', 'release')(event.target.value)}
+                //             />
+                //         </div>
+                //     </div>
+                //     <div className="order__form__right">
+                //         <div 
+                //             className="order__form__record-button"
+                //             onClick = {event => this.recognize() }
+                //         >
+                //             <i className="icon-volume-medium" style={{ color: this.state.touch? 'white': 'black'}}/>
+                //         </div>
+                //     </div>
+                // </div>
+                // <div className="order__select">
+//                     <div className="order__select__selector">
+//                         <div className="order__select_selector__four">
+//                             <div className="order__select_selector__four__row">
+//                                 <div 
+//                                     className={this.state.release.tunnel == 'any'?"order__select_selector__four__button bg-yellow": "order__select_selector__four__button bg-lightyellow black"}
+//                                     onClick={ _ => this.handleChange('tunnel', 'release')('any')}
+//                                 >
+//                                     任行
+//                                 </div>
+//                                 <div 
+//                                     className={this.state.release.tunnel == 'eastTunnel'?"order__select_selector__four__button bg-yellow": "order__select_selector__four__button bg-blue black"}
+//                                     onClick={ _ => this.handleChange('tunnel', 'release')('eastTunnel')}
+//                                 >
+//                                     東隧
+//                                 </div>
+//                             </div>
+//                             <div className="order__select_selector__four__row">
+//                                 <div 
+//                                     className={ this.state.release.tunnel == 'westTunnel'?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightpink black"}
+//                                     onClick={ _ => this.handleChange('tunnel', 'release')('westTunnel')}
+//                                 >
+//                                     西隧
+//                                 </div>
+//                                 <div 
+//                                     className={ this.state.release.tunnel == 'hungHomTunnel'?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-smoke"}
+//                                     onClick={ _ => this.handleChange('tunnel', 'release')('hungHomTunnel')}
+//                                 >
+//                                     紅隧
+//                                 </div>
+//                             </div>
+//                         </div>
+//                         <div className="order__select_selector__three">
+//                             <div 
+//                                 className={ this.state.release.taxiType == 'red'? "order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-red"}
+//                                 onClick={ _ => this.handleChange('taxiType', 'release')('red')}
+//                             >
+//                                 紅的
+//                             </div>
+//                             <div 
+//                                 className={ this.state.release.taxiType == 'green'?"order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-seagreen"}
+//                                 onClick={ _ => this.handleChange('taxiType', 'release')('green')}
+//                             >
+//                                 綠的
+//                             </div>
+//                             <div 
+//                                 className={ this.state.release.taxiType == 'blue'?"order__select_selector__three__button bg-yellow":"order__select_selector__three__button bg-deepblue"}
+//                                 onClick={ _ => this.handleChange('taxiType', 'release')('blue')}
+//                             >
+//                                 藍的
+//                             </div>
+//                         </div>
+//                         <div className="order__select_selector__four">
+//                             <div className="order__select_selector__four__row">
+//                                 <div 
+//                                     className={ this.state.release.passenger == 4?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightyellow black"}
+//                                     onClick={ _ => this.handleChange('passenger', 'release')(4)}
+//                                 >
+//                                     4人
+//                                 </div>
+//                                 <div 
+//                                     className={ this.state.release.passenger == 5?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-tomato"}
+//                                     onClick={ _ => this.handleChange('passenger', 'release')(5)}
+//                                 >
+//                                     5人
+//                                 </div>
+//                             </div>
+//                             <div className="order__select_selector__four__row">
+//                                 <div 
+//                                     className={ this.state.release.passenger == 6?"order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-lightgrey"}
+//                                     onClick={ _ => this.handleChange('passenger', 'release')(6)}
+//                                 >
+//                                     大Fold
+//                                 </div>
+//                                 <div 
+//                                     className={ this.state.release.passenger == 7? "order__select_selector__four__button bg-yellow":"order__select_selector__four__button bg-brown"}
+//                                     onClick={ _ => this.handleChange('passenger', 'release')(7)}
+//                                 >
+//                                     輪椅
+//                                 </div>
+//                             </div>
+//                         </div>
+//                         <div className="order__select_selector__two">
+//                             <div 
+//                                 className={ this.state.release.return? "order__select_selector__two__button bg-yellow":"order__select_selector__two__button bg-grey"}
+//                                 onClick={ _ => this.handleChange('return', 'release')(!this.state.release.return)}
+//                             >
+//                                 來回
+//                             </div>
+//                             <div 
+//                                 className={ this.state.release.fixedPrice? "order__select_selector__two__button bg-yellow":"order__select_selector__two__button bg-grey"}
+//                                 onClick={ _ => {
+//                                         let input = window.prompt("定食 (請輸入預定訂單價錢)")
+//                                         if( input.trim() == "" ){
+//                                             this.handleChange('fixedPrice', 'release')(null);
+//                                         }else if( isNaN(parseInt(input)) || parseInt(input)<1 ){
+//                                             window.alert("輸入不正確", "你所輸入的訂單價錢不正確! ");
+//                                         } else {
+//                                             this.handleChange('fixedPrice', 'release')(parseInt(input));
+//                                         }
+//                                     }
+//                                 }
+//                             >
+//                                 定食
+//                             </div>
+//                         </div>
+//                     </div>
+//                     <div className="order__select__confirm">
+//                         <div className="order__select__confirm__three">
+//                             <div 
+//                                 className="order__select__confirm__three__button bg-seagreen"
+//                                 onClick={ _ => this.orderSubmit(100)}
+//                             >
+//                                 <div className="order__select__confirm__three__button__title">
+//                                     確定
+//                                 </div>
+//                                 <div className="order__select__confirm__three__button__title">
+//                                     千足金
+//                                 </div>
+//                             </div>
+//                             <div 
+//                                 className="order__select__confirm__three__button bg-orange"
+//                                 onClick={ _ => this.orderSubmit(90)}
+//                             >
+//                                 <div className="order__select__confirm__three__button__title">
+//                                     確定
+//                                 </div>
+//                                 <div className="order__select__confirm__three__button__title">
+//                                     九仔
+//                                 </div>
+//                             </div>
+//                             <div 
+//                                 className="order__select__confirm__three__button bg-deepblue"
+//                                 onClick={ _ => this.orderSubmit(85)}
+//                             >
+//                                 <div className="order__select__confirm__three__button__title">
+//                                     確定
+//                                 </div>
+//                                 <div className="order__select__confirm__three__button__title">
+//                                     會員柯
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>

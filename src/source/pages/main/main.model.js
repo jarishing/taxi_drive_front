@@ -20,6 +20,19 @@ class Model extends MVP.Model{
         };
     }
 
+    tunnelSelect = (field, inner) => value => {
+        const stateChange = JSON.parse(JSON.stringify(this.state))
+        if( stateChange[inner][field] == value )
+            stateChange[inner][field] = 'any';
+        else
+            stateChange[inner][field] = value;
+        this.setState(stateChange);
+    }
+
+    onChangePw = () => {
+        this.props.history.push('/changePw');
+    }
+
     handleChange = (field, inner) => value => {
         const stateChange = JSON.parse(JSON.stringify(this.state))
         if(inner)
@@ -70,22 +83,30 @@ class Model extends MVP.Model{
                 case 'RENEW_ORDER_LIST':
                     await this.getOrder();
                     break;
-                // case 'ORDER_OVERTIME_CONFIRM':
-                    // this.presenter.confirmOvertime();
+                case 'USER_CANCEL':
+                    window.alert('乘客已取消訂單');
+                    break;
+                case 'DRIVER_RELEASE':
+                    window.alert('你所出的訂單已被其他司機放棄，如有需要請重新落單');
+                    break;
+                case 'DRIVER_ACCEPT':
+                    window.alert('你的訂單已被其他司機接受，詳情可到「已出」查閱');
                     break;
                 case 'ORDER_OVERTIME_DEL':
                     await this.getOrder();
                     break;
             }
         });
-
-
+        // if ( this.props.user ){
+        //     console.log("hello");
+        //     this.askCarNumber()
+        // }
     }
 
     async askCarNumber(){
         isLoad = true;
         setTimeout(async() => {
-            const input = window.prompt("請輸入你的新車牌號碼");
+            const input = window.prompt("請輸入你的新車牌號碼", this.props.user.vehicle_reg_no);
             if ( input != null && input.trim() !== "" ){
                 await api.user.updateVehicleRegNo(input);
                 await this.presenter.renewMe();
@@ -98,8 +119,8 @@ class Model extends MVP.Model{
     }
 
     componentDidMount(){
-        if ( this.props.user )
-            this.askCarNumber()
+        // if ( this.props.user )
+        //     this.askCarNumber()
     }
 
     componentDidUpdate(){

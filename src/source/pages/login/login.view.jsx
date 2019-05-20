@@ -55,10 +55,16 @@ export default props => {
                             Remember me 
                         </div> */}
                         <p 
-                            className="float-right pointer"
+                            className="float-left pointer"
                             onClick={ _ => props.history.push('/register')}
                         > 
                             註冊為新用戶 
+                        </p>
+                        <p 
+                            className="float-right pointer"
+                            onClick={ _ => props.history.push('/forget')}
+                        > 
+                            忘記密碼
                         </p>
                     </div>
                     <button 

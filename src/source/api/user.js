@@ -22,6 +22,43 @@ export async function getMe( userId, access_token){
     }
 }
 
+export async function forgetPassword( body ){
+    let data = await axios.post(
+        url + '/api/user/forgetPassword',
+        body
+    )
+    .catch( error => {
+        console.log(error);
+        window.alert('您的用戶名稱或電話號碼錯誤，請重新確認');
+        return null;
+    });
+
+    return data;  
+}
+
+export async function changePw( body , userId, access_token ){
+
+    console.log( body , userId, access_token );
+    let data = await axios.patch(
+        url + '/api/user/' +  userId, 
+        body,
+        {headers: { authorization: 'Bearer ' + access_token }}
+    ).catch( error => {
+        console.log(error);
+        window.alert('您的密碼並不正確，請重新輸入');
+        return null;
+    });
+    
+    return data;    
+    // .catch( error => {
+    //     console.log(error);
+    //     window.alert('您的用戶名稱或電話號碼錯誤，請重新確認');
+    //     return null;
+    // });
+
+    // return data;  
+}
+
 export async function register( 
     username, 
     password, 

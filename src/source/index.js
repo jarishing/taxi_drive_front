@@ -15,6 +15,11 @@ require('babel-polyfill');
 
 const startApp = () => {
 
+    if(window.MobileAccessibility){
+        window.MobileAccessibility.usePreferredTextZoom(false);
+    } else 
+        window.alert('MobileAccessibility not exist')
+
     ReactDOM.render(
         <Provider store={Store}>
             <CookiesProvider>
@@ -27,9 +32,10 @@ const startApp = () => {
     // registerServiceWorker();
   };
   
-if(window.cordova){
-    document.addEventListener('deviceready', startApp, false);
-} else {
-    startApp();
-}
+
+    if(window.cordova){
+        document.addEventListener('deviceready', startApp, false);
+    } else {
+        startApp();
+    }
 

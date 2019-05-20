@@ -2,6 +2,8 @@
     position: relative;
     height: 100%;
     width: 100%;
+    max-width: 100%;
+    max-height: 100%;
     background: black;
 }
 
@@ -61,16 +63,33 @@
     display: flex;
     position: relative;
     margin-bottom: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
     .order__from_to > div{
-        width: 45%;
         /* color: white; */
         text-align: center;
         font-size: 24px;
     }
 
     .order__from_to > i {
+        width: 5%;
+        font-size: 24px;
+        /* color: white; */
+        text-align: center;
+        line-height: 45px;
+        margin: 0 1rem;
+    }
+
+    .order__route-to{
+        display: flex;
+        position: relative;
+        margin-bottom: 6px;
+        width: 30%;
+    }
+
+    .order__route-to > i {
         width: 10%;
         font-size: 24px;
         /* color: white; */
@@ -134,11 +153,282 @@
             font-size: 48px;   
         }
 
+    .check-order-table > tbody > tr > td{
+        font-size: 2.4rem;
+    }
+
 /* For portrait, we want the tool bar on top */
 
 @media screen and (orientation: portrait) {
+
+    .order_select-input{
+        display: block;
+        width: 100%;
+        height: 4rem;
+        padding: 6px 12px;
+        font-size: 1.9rem;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    }
+
+    .order__form__record-button > i {
+        line-height: 115px;
+        width: calc( 100% - 10px);
+        background-color: deepskyblue;
+        margin-left: 10px;
+        text-align: center;
+        border-radius: 2px;
+        font-size: 48px;
+        color: black;
+        height: 13.4rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;    
+    }
+
+    .order-select-list{
+        display: flex;
+        margin: 1rem 0;
+        justify-content: space-between;
+
+    }
+
+    .order-icon-tunnel{
+        height: 12vh;
+        width: 12vh;
+        position: relative;
+        padding: 0.5rem;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+    }
+
+    .order-icon-tunnel-img{
+        height: 100%;
+        width: 100%;
+    }
+    
+    .order-icon-taxi{
+        width: 50%;
+        height: 50%;
+        position: absolute;
+        bottom: 0;
+    }
+
+    .order-icon-taxi-title{
+        position: absolute;
+        top: 0;
+        font-size: 4vh;
+        color: #FFF;
+        right: 0.5rem;
+    }
+
+    
+    .order-icon-tunnel-title{
+        position: absolute;
+        top: 1.9vh;
+        font-size: 4vh;
+        color: #FFF;
+        left: 3.7vh;
+    }
+
+    .order-select-row{
+        display: flex;
+        justify-content: space-between;
+        margin: 0.5rem 0;
+    }
+
+    .order-select-row-item{
+        width: 48%;
+        height: 12vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        font-size: 3vh;
+        color: #FFF;
+        margin-right: 0.5rem;
+    }
+
+    .order-select-row-item:last-child{
+        margin-right: 0;
+    }
+
+    .order-select-row-item-big{
+        width: 48%;
+        height: 12vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        font-size: 3vh;
+        color: #FFF;
+        margin-right: 0.5rem;
+    }
+
+    .order-select-row-item-big-price{
+        display: flex;
+        justify-content: center;
+    }
+
+    .order-select-row-item-big:last-child{
+        margin-right: 0;
+    }
+
+    .order-select-confirm-list{
+        display: flex;
+        margin-top: 3vh;
+        justify-content: space-between;
+    }
+
+    .order-select-confirm-item-title{
+        font-size: 3vh;
+        color: #FFF;
+        margin: 0.5rem 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .order-select-confirm-item{
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 15vh;
+        margin-right: 0.5rem;
+    }
+
+    .order-select-confirm-item:last-child{
+        margin-right: 0;
+    }
+
+    /* .order-select-list{
+        display: flex;
+        margin: 1.5rem 0;
+        justify-content: space-between;
+    }
+
+    .order-icon-tunnel{
+        height: 7rem;
+        width: 7rem;
+        position: relative;
+        padding: 0.5rem;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+    }
+
+    .order-icon-tunnel-img{
+        height: 100%;
+        width: 100%;
+    }
+    
+    .order-icon-taxi{
+        width: 50%;
+        height: 50%;
+        position: absolute;
+        bottom: 0;
+    }
+
+    .order-icon-taxi-title{
+        position: absolute;
+        top: 0;
+        font-size: 2.6rem;
+        color: #FFF;
+        right: 0.5rem;
+    }
+
+    
+    .order-icon-tunnel-title{
+        position: absolute;
+        top: 1.2rem;
+        font-size: 2.5rem;
+        color: #FFF;
+        left: 2.1rem;
+    }
+
+    .order-select-row{
+        display: flex;
+        justify-content: space-between;
+        margin: 0.5rem 0;
+    }
+
+    .order-select-row-item{
+        width: 48%;
+        height: 6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        font-size: 2rem;
+        color: #FFF;
+        margin-right: 0.5rem;
+    }
+
+    .order-select-row-item:last-child{
+        margin-right: 0;
+    }
+
+    .order-select-row-item-big{
+        width: 48%;
+        height: 6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        font-size: 2rem;
+        color: #FFF;
+        margin-right: 0.5rem;
+    }
+
+    .order-select-row-item-big-price{
+        display: flex;
+        justify-content: center;
+    }
+
+    .order-select-row-item-big:last-child{
+        margin-right: 0;
+    }
+
+    .order-select-confirm-list{
+        display: flex;
+        margin-top: 2.5rem;
+        justify-content: space-between;
+    }
+
+    .order-select-confirm-item-title{
+        font-size: 2rem;
+        color: #FFF;
+        margin: 0.5rem 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .order-select-confirm-item{
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 8rem;
+        height: 8rem;
+    } */
+
     .order__select {
-        height: calc(100% - 120px);
+        /* height: calc(100% - 120px); */
     }
 
 
@@ -218,9 +508,136 @@
 
 
 @media screen and (orientation: landscape) {
-    .order__select {
-        height: calc(100% - 120px);
+
+    .order_select-input{
+        display: block;
+        width: 100%;
+        height: 9vh;
+        padding: 6px 12px;
+        font-size: 1.8rem;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    }
+
+    .order__form__record-button > i {
+        line-height: 115px;
+        width: calc( 100% - 10px);
+        background-color: deepskyblue;
+        margin-left: 10px;
+        text-align: center;
+        border-radius: 2px;
+        font-size: 48px;
+        color: black;
+        height: 31vh;
         display: flex;
+        justify-content: center;
+        align-items: center;    
+    }
+
+    .order-select-list{
+        margin-right: 0.5rem;
+    }
+
+    .order-icon-tunnel{
+        height: 20vh;
+        width: 20vh;
+        position: relative;
+        padding: 0.5rem;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        margin-bottom: 0.3rem;
+    }
+    
+    .order-icon-tunnel-img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .order-icon-taxi{
+        width: 50%;
+        height: 50%;
+        position: absolute;
+        bottom: 0;
+    }
+    
+    .order-icon-tunnel-title{
+        position: absolute;
+        top: 4vh;
+        font-size: 1.8rem;
+        color: #FFF;
+        left: 6.5vh;
+    }
+
+    .order-icon-taxi-title{
+        position: absolute;
+        top: 0;
+        font-size: 1.8rem;
+        color: #FFF;
+        right: 0.5rem;
+    }
+
+    .order-select-row-item{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        font-size: 1.8rem;
+        color: #FFF;
+        height: 20vh;
+        width: 36vh;
+        margin-bottom: 0.3rem;
+    }
+
+    .order-select-row-item-big{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        font-size: 1.8rem;
+        color: #FFF;
+        height: 29.6vh;
+        width: 36vh;
+        margin-bottom: 1rem;
+    }
+
+    .order-select-row-item-big-price{
+        display: flex;
+        justify-content: center;
+    }
+
+    .order-select-confirm-item{
+        height: 20vh;
+        width: 36vh;
+        border: 2px solid #FFF;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 0.3rem;
+    }
+
+    .order-select-confirm-item-title{
+        font-size: 5vh;
+        color: #FFF;
+        display: flex;
+        justify-content: center;
+        margin: 0.2rem 0;
+    }
+
+    .order__select {
+        display: flex;
+        padding-top: 0.5rem;
         justify-content: space-between;
     }
 
@@ -356,6 +773,8 @@
         }
 */
 
+
+
 .black { color: black !important };
 .bg-green { background-color: green !important; }
 .bg-red { background-color: red !important; }
@@ -372,6 +791,10 @@
 .bg-seagreen { background-color: seagreen !important; }
 .bg-tomato { background-color: tomato !important}
 .bg-smoke { background-color: whitesmoke !important}
+.bg-honey { background-color:#DAA520 !important}
+.bg-jet { background-color:#F56416 !important}
+.bg-taupe { background-color:#8EB8E5 !important}
+.bg-wenge { background-color:#6B654B !important}
 
 
 .table-cs > tbody > tr > td {

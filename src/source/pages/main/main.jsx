@@ -19,6 +19,10 @@ class Presenter extends MVP.Presenter {
         this.view.confirmOvertime(orderId);
     }
 
+    onChangePw(){
+        this.model.onChangePw();
+    }
+
 
 }
 
