@@ -85,7 +85,7 @@ class View extends MVP.View{
                     return this.alert('註冊失敗', `資料有誤. 請檢查你的輸入! `);
             }
 
-            this.alert('註冊成功', `成功註冊! 管理員會盡快審核你的申請! `, _ => {
+            this.alert('註冊成功', `成功註冊! 我們已傳送訊息到您的手機中，請盡快確認。 `, _ => {
                 this.handleChange("show", 'alert')(false);
                 this.props.history.replace('/');
             });
