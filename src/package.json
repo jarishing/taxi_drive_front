@@ -17,7 +17,7 @@
   "author": "ken.yip",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel-polyfill": "^6.26.0",
     "babel-preset-stage-2": "^6.24.1",
     "cordova-android": "^7.1.4",
